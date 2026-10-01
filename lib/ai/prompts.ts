@@ -4,6 +4,9 @@ const AUDIENCE = `The audience is people in India who follow Western fitness inf
 Prefer ingredients that are easy to buy in Indian kitchens, kiranas and supermarkets (paneer, dal, chana, rajma, soya chunks, curd/hung curd, besan, sattu, eggs, chicken, fish, millets, poha, atta, ghee, Indian spices, etc.).
 Use Indian names where natural (e.g. "Paneer", "Hung curd", "Moong dal") and metric/Indian quantities (g, ml, cups, katori, tbsp).`;
 
+// Every ingredient needs an amount so protein and calories are believable.
+const QUANTITY_RULE = `Every ingredient must have a quantity. If the reel or caption doesn't give one, estimate a typical amount for this recipe and start it with "~" (e.g. "~200 g", "~1 tbsp"). Never leave quantity empty or write "not specified".`;
+
 export function extractionPrompt(caption: string, frameCount: number): string {
   return `You are reading an Instagram fitness reel. ${frameCount > 0 ? `${frameCount} still frames from the video are attached, in order (frame 1 = first).` : "No frames are available; use the caption only."}
 
@@ -15,7 +18,7 @@ ${caption || "(no caption)"}
 Decide whether the reel is a "recipe", a "workout", or "other" (anything else).
 Write down the ORIGINAL version exactly as the reel presents it. Do NOT adapt, translate, or substitute anything yet.
 
-If recipe: title, prepTimeMinutes, the ingredients with quantities, clear numbered-style steps (no numbers in the text), and your best estimate of proteinGrams and calories PER SERVING. Leave frequency "", rounds 0, exercises [].
+If recipe: title, prepTimeMinutes, the ingredients with quantities (${QUANTITY_RULE}), clear numbered-style steps (no numbers in the text), and your best estimate of proteinGrams and calories PER SERVING. Leave frequency "", rounds 0, exercises [].
 If workout: title, frequency "", rounds, and each exercise with reps (e.g. "12 reps", "30 sec"). For each exercise set "frame" to the 1-based frame that best shows it (0 if none). Leave ingredients [], steps [], numbers 0.
 If other: title can describe it; leave everything else empty or 0.
 heroFrame: the 1-based frame that best shows the finished dish or workout (0 if no frames).
@@ -32,7 +35,7 @@ ${idea}
 """
 
 Decide whether they want a "recipe" or a "workout" ("other" only if it is clearly neither), then create one original, practical version of it.
-If recipe: title, prepTimeMinutes, ingredients with quantities, clear steps (no numbers in the text), and your best estimate of proteinGrams and calories PER SERVING. Leave frequency "", rounds 0, exercises [].
+If recipe: title, prepTimeMinutes, ingredients with quantities (${QUANTITY_RULE}), clear steps (no numbers in the text), and your best estimate of proteinGrams and calories PER SERVING. Leave frequency "", rounds 0, exercises [].
 If workout: title, frequency "", rounds, and 4-8 exercises with reps (e.g. "12 reps", "30 sec"); set each exercise frame to 0. Leave ingredients [], steps [], numbers 0.
 heroFrame: 0.
 Respond only with JSON matching the schema.`;
@@ -82,7 +85,7 @@ ${instruction}
 
 Rules:
 - Return the ingredients list in the SAME ORDER and with the SAME NUMBER of items. Only change the ingredients you are told to change; copy the others exactly.
-- Adjust quantities of replaced ingredients so the dish still works.
+- Adjust quantities of replaced ingredients so the dish still works. Keep a leading "~" on estimated amounts. ${QUANTITY_RULE}
 - Rewrite the steps so they use the new ingredients (cooking times/methods may change).
 - Recalculate proteinGrams and calories per serving for the new version (estimates).
 - Keep the title close to the original but reflect the main swap if it changes the dish (e.g. "Paneer Tikka Wrap").

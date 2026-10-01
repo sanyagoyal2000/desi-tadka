@@ -77,6 +77,8 @@ Added at the learner's request ("build all your suggestions"), built and mechani
 - [ ] Swap suggestions for every item are fetched once when a card opens, and the sheet shows a clear loading message (learner: "looks weird empty")
 - [ ] "How often" removed from workout cards and shared text (learner request)
 
+- [ ] Missing ingredient amounts are estimated by the AI and marked "~" (learner approved the recommendation)
+
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

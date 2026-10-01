@@ -37,7 +37,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
                   {ing.name}
                 </p>
                 <p className="text-sm text-ink/60">
-                  {ing.quantity}
+                  {ing.quantity || <span className="italic">amount not given</span>}
                   {ing.swapped && ing.original && <span className="ml-2 line-through decoration-chili/60">{ing.original}</span>}
                 </p>
               </div>
@@ -45,6 +45,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
             </li>
           ))}
         </ul>
+        {card.ingredients.some((i) => i.quantity.trim().startsWith("~")) && <p className="mt-2 text-xs text-ink/60">~ estimated amount — the reel didn&apos;t say. Tap ↺ to change it.</p>}
 
         <h3 className="mt-5 font-display text-xl font-bold">
           Steps <span className="text-base font-semibold text-ink/50">· {card.steps.length}</span>
