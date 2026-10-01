@@ -72,6 +72,9 @@ export default function PlanPage() {
   if (cards === null || plan === null || !start || !today) {
     return (
       <main className="flex flex-col gap-3">
+        <Link href="/" className="font-semibold text-chili">
+          ← Home
+        </Link>
         {error ? <p className="font-semibold text-chili">{error}</p> : [0, 1, 2].map((i) => <div key={i} className="h-20 animate-pulse rounded-3xl bg-surface/60" />)}
       </main>
     );
@@ -79,6 +82,9 @@ export default function PlanPage() {
 
   return (
     <main className="flex flex-col gap-6">
+      <Link href="/" className="font-semibold text-chili">
+        ← Home
+      </Link>
       <div>
         <h1 className="font-display text-3xl font-extrabold">My plan</h1>
         <p className="text-sm text-ink/60">Drag a card onto a day, or tap a card and then tap a day.</p>
