@@ -4,8 +4,6 @@ import { useState } from "react";
 import { isValidReelLink } from "@/lib/validateLink";
 import { STEP_LABELS, type ExtractStep } from "@/lib/progress";
 
-const looksLikeLink = (s: string) => /^https?:\/\/|instagram\.com/i.test(s.trim());
-
 type Props = {
   busy: boolean;
   step: ExtractStep | null;
@@ -18,44 +16,68 @@ type Props = {
 };
 
 export default function LinkInput({ busy, step, mode, onSubmitLink, onSubmitIdea, onSubmitCaption, error, showCaptionFallback }: Props) {
+  const [source, setSource] = useState<"reel" | "idea">("reel");
   const [link, setLink] = useState("");
+  const [idea, setIdea] = useState("");
   const [caption, setCaption] = useState("");
-  const isLink = looksLikeLink(link);
-  const wrongLink = isLink && !isValidReelLink(link);
+  const wrongLink = source === "reel" && link.trim() !== "" && !isValidReelLink(link);
+  const value = source === "reel" ? link : idea;
 
   return (
     <div className="rounded-3xl bg-surface p-4 shadow-[0_8px_30px_rgba(42,26,16,0.08)]">
+      <div role="tablist" aria-label="What are you adding?" className="mb-3 grid grid-cols-2 gap-1 rounded-2xl bg-cream p-1">
+        {SOURCES.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            role="tab"
+            aria-selected={source === s.id}
+            onClick={() => setSource(s.id)}
+            className={`rounded-xl py-2 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
+              source === s.id ? "bg-chili text-white shadow" : "text-ink/60 hover:text-ink"
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (wrongLink || !link.trim()) return;
-          if (isLink) onSubmitLink(link.trim());
-          else onSubmitIdea(link.trim());
+          if (wrongLink || !value.trim()) return;
+          if (source === "reel") onSubmitLink(link.trim());
+          else onSubmitIdea(idea.trim());
         }}
       >
         <label htmlFor="reel" className="font-display text-lg font-bold">
-          Share your ideas
+          {source === "reel" ? "Paste an Instagram reel" : "Type a recipe or workout idea"}
         </label>
-        <p className="text-sm text-ink/60">Paste an Instagram reel link, or just type what you&apos;re craving — we&apos;ll give it some desi tadka.</p>
+        <p className="text-sm text-ink/60">
+          {source === "reel"
+            ? "Recipe or fitness reel — we’ll turn it into a card you can swap and save."
+            : "Say what you’re craving or want to train — we’ll give it some desi tadka."}
+        </p>
         <div className="mt-2 flex gap-2">
           <input
             id="reel"
+            key={source}
+            inputMode={source === "reel" ? "url" : "text"}
             autoComplete="off"
             enterKeyHint="go"
-            placeholder="Reel link or “paneer breakfast”"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
+            placeholder={source === "reel" ? "https://www.instagram.com/reel/…" : "“paneer breakfast” or “20 min leg workout”"}
+            value={value}
+            onChange={(e) => (source === "reel" ? setLink : setIdea)(e.target.value)}
             className={`min-w-0 flex-1 rounded-2xl border-2 bg-cream px-4 py-3 text-base outline-none focus:border-turmeric ${wrongLink ? "border-chili" : "border-transparent"}`}
           />
           <button
             type="submit"
-            disabled={busy || wrongLink || !link.trim()}
+            disabled={busy || wrongLink || !value.trim()}
             className="rounded-2xl bg-chili px-5 py-3 font-display text-lg font-bold text-white disabled:opacity-40"
           >
             {busy ? "…" : "Go"}
           </button>
         </div>
-        {wrongLink && <p className="mt-2 text-sm font-semibold text-chili">That isn&apos;t an Instagram reel link.</p>}
+        {wrongLink && <p className="mt-2 text-sm font-semibold text-chili">Wrong link</p>}
         {error && !wrongLink && <p className="mt-2 text-sm font-semibold text-chili">{error}</p>}
         {busy && <Progress step={step} mode={mode} />}
       </form>
@@ -87,6 +109,11 @@ export default function LinkInput({ busy, step, mode, onSubmitLink, onSubmitIdea
     </div>
   );
 }
+
+const SOURCES = [
+  { id: "reel", label: "🎬 Reel link" },
+  { id: "idea", label: "✍️ Type an idea" },
+] as const;
 
 const ORDER: ExtractStep[] = ["read", "write", "plate"];
 

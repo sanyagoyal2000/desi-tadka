@@ -68,7 +68,7 @@ Build mode: fast (learner asked to build everything, then get one explanation of
 
 Added at the learner's request ("build all your suggestions"), built and mechanically verified; each still needs the learner to try it:
 - [ ] Home: search plus High protein / Vegetarian / Under 20 min filters; favorite and delete saved cards
-- [ ] "Type an idea" input that makes a card without a reel
+- [ ] "Type an idea" input that makes a card without a reel — moved to its own tab after the learner reported "the option to add reels is missing"; the reel box (recipe or fitness) is back as the default
 - [ ] Step-by-step progress while converting (Reading reel → Writing the card → Plating)
 - [ ] Weekly plan page (`/plan`) with a combined shopping list
 - [ ] Share a card as text or image; light/dark toggle; logo and tagline in the header
