@@ -152,7 +152,7 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
               {c.kind === "recipe" ? `${c.proteinGrams}g protein · ${c.calories} cal` : `${c.exercises.length} exercises · ${c.rounds} rounds`}
               {swaps > 0 && (
                 <span className="ml-1 inline-flex items-center gap-0.5 font-semibold text-turmeric">
-                  · <ArrowsClockwise aria-label="swaps" size={12} weight="bold" /> {swaps}
+                  · <ArrowsClockwise aria-hidden="true" size={12} weight="bold" /> Personalized
                 </span>
               )}
             </p>

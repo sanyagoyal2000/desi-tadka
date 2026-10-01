@@ -13,7 +13,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
   const anySwapped = card.ingredients.some((i) => i.swapped);
   return (
     <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
-      <CardImage src={card.image} alt={card.title} kind="recipe" badge={anySwapped && !card.imageIsGenerated ? "swapped" : undefined} />
+      <CardImage src={card.image} alt={card.title} kind="recipe" badge={anySwapped ? "Personalized" : undefined} />
       <div className="p-5">
         <span className="text-xs font-bold uppercase tracking-widest text-chili">Recipe</span>
         <h2 className="font-display text-3xl font-extrabold leading-tight">{card.title}</h2>
@@ -34,7 +34,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
             >
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">
-                  {ing.swapped && <ArrowsClockwise aria-label="Changed" size={15} weight="bold" className="mr-1 inline-block align-[-2px] text-turmeric" />}
+                  {ing.swapped && <ArrowsClockwise aria-label="Personalized" size={15} weight="bold" className="mr-1 inline-block align-[-2px] text-turmeric" />}
                   {ing.name}
                 </p>
                 <p className="text-sm text-ink/60">

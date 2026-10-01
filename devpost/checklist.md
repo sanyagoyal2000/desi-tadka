@@ -79,6 +79,7 @@ Added at the learner's request ("build all your suggestions"), built and mechani
 
 - [ ] Missing ingredient amounts are estimated by the AI and marked "~" (learner approved the recommendation)
 - [ ] Emoji replaced with line icons and orange gradients with flat placeholders, keeping the orange theme and font (learner chose small changes)
+- [ ] Changed items are labelled "Personalized" instead of "swapped" on cards and the Home list (learner request)
 
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
