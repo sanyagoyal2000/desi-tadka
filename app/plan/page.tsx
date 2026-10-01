@@ -3,28 +3,19 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { DAYS, type Card, type Day, type Plan, type RecipeCard } from "@/lib/schema";
-import { DAY_LABELS, shoppingList } from "@/lib/plan";
+import { DAYS, type Card, type Day, type Plan } from "@/lib/schema";
+import { DAY_LABELS } from "@/lib/plan";
 import { sortCards } from "@/lib/cardFilters";
 
-const CHECKED_KEY = "desitadka:shopping-checked";
 type DragData = { id: string; from?: { day: Day; index: number } };
 
-// Weekly planner: drag (or tap-then-tap) saved cards onto days; builds a shopping list from planned recipes.
+// Weekly planner: drag (or tap-then-tap) saved cards onto days.
 export default function PlanPage() {
   const [cards, setCards] = useState<Card[] | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [overDay, setOverDay] = useState<Day | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [checked, setChecked] = useState<Set<string>>(() => {
-    try {
-      return new Set(JSON.parse(localStorage.getItem(CHECKED_KEY) ?? "[]"));
-    } catch {
-      return new Set();
-    }
-  });
-
   useEffect(() => {
     Promise.all([fetch("/api/cards").then((r) => r.json()), fetch("/api/plan").then((r) => r.json())])
       .then(([c, p]) => {
@@ -64,19 +55,9 @@ export default function PlanPage() {
 
   function clearWeek() {
     save({ days: Object.fromEntries(DAYS.map((d) => [d, []])) as unknown as Plan["days"] });
-    persistChecked(new Set());
-  }
-
-  function persistChecked(next: Set<string>) {
-    setChecked(next);
-    try {
-      localStorage.setItem(CHECKED_KEY, JSON.stringify([...next]));
-    } catch {}
   }
 
   const planned = plan ? DAYS.flatMap((d) => plan.days[d].map((id) => byId.get(id)).filter((c): c is Card => Boolean(c))) : [];
-  const recipes = planned.filter((c): c is RecipeCard => c.kind === "recipe");
-  const list = shoppingList(recipes);
 
   if (cards === null || plan === null) {
     return (
@@ -190,61 +171,6 @@ export default function PlanPage() {
           </li>
         ))}
       </ol>
-
-      <section aria-labelledby="shopping-heading" className="rounded-3xl bg-surface p-4 shadow-[0_2px_8px_rgba(42,26,16,0.06)]">
-        <div className="flex items-center justify-between">
-          <h2 id="shopping-heading" className="font-display text-2xl font-extrabold">
-            🛒 Shopping list
-          </h2>
-          {list.length > 0 && (
-            <button
-              type="button"
-              onClick={() =>
-                navigator.clipboard
-                  .writeText(list.filter((i) => !checked.has(i.key)).map((i) => `• ${i.quantity} ${i.name}`.replace(/\s+/g, " ")).join("\n"))
-                  .catch(() => setError("Couldn't copy."))
-              }
-              className="text-sm font-bold text-chili"
-            >
-              📋 Copy
-            </button>
-          )}
-        </div>
-        {list.length === 0 ? (
-          <p className="mt-1 text-sm text-ink/60">Add recipes to your week and their ingredients show up here.</p>
-        ) : (
-          <>
-            <p className="text-xs text-ink/50">
-              From {recipes.length} planned {recipes.length === 1 ? "meal" : "meals"} · {list.length - list.filter((i) => checked.has(i.key)).length} left to buy
-            </p>
-            <ul className="mt-3 flex flex-col gap-1">
-              {list.map((item) => {
-                const done = checked.has(item.key);
-                return (
-                  <li key={item.key}>
-                    <label className="flex cursor-pointer items-start gap-3 rounded-xl px-2 py-1.5 hover:bg-cream">
-                      <input
-                        type="checkbox"
-                        checked={done}
-                        onChange={() => {
-                          const next = new Set(checked);
-                          if (!next.delete(item.key)) next.add(item.key);
-                          persistChecked(next);
-                        }}
-                        className="mt-1 size-4 accent-[var(--color-leaf)]"
-                      />
-                      <span className={`flex-1 ${done ? "text-ink/40 line-through" : ""}`}>
-                        <span className="font-semibold">{item.name}</span> <span className="text-sm text-ink/60">{item.quantity}</span>
-                        <span className="block text-[11px] text-ink/40">{item.recipes.join(", ")}</span>
-                      </span>
-                    </label>
-                  </li>
-                );
-              })}
-            </ul>
-          </>
-        )}
-      </section>
 
       {planned.length > 0 && (
         <button type="button" onClick={clearWeek} className="text-sm font-semibold text-ink/50 hover:text-chili">
