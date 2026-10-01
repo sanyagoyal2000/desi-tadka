@@ -1,0 +1,24 @@
+/devpost/learner-profile.md
+.env
+.env.*
+!.env.example
+
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# DesiTadka local data
+/data/
+/public/media/
+/tmp/

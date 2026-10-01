@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-chili: #d9480f;
+  --color-turmeric: #f08c00;
+  --color-turmeric-soft: #fff1d6;
+  --color-cream: #fdf6ee;
+  --color-ink: #2a1a10;
+  --color-leaf: #2b8a3e;
+  --font-display: var(--font-baloo);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}

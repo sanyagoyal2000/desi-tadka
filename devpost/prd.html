@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DesiTadka — PRD</title>
+<style>
+  :root {
+    --bg: #fdf6ee; --surface: #ffffff; --ink: #2a1a10; --muted: #7a6455; --line: #f0dfcf;
+    --chili: #d9480f; --chili-soft: #fff0e6; --turmeric: #f08c00; --turmeric-soft: #fff7e0;
+    --leaf: #2b8a3e; --leaf-soft: #ebfbee; --hl: #ffe066;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a120c; --surface: #26190f; --ink: #f8ece0; --muted: #b59e8c; --line: #3d2a1c;
+      --chili: #ff7a45; --chili-soft: #3a1d0e; --turmeric: #ffb347; --turmeric-soft: #35260c;
+      --leaf: #69db7c; --leaf-soft: #17291b; --hl: #7a5c00;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 40px 16px 80px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--chili); background: var(--chili-soft); padding: 3px 10px; border-radius: 99px; }
+  h1 { font-size: clamp(34px, 7vw, 52px); line-height: 1.05; margin: 14px 0 8px; }
+  h1 span { color: var(--chili); }
+  .lede { font-size: 19px; color: var(--muted); margin: 0 0 8px; }
+  .grow { font-size: 15px; background: var(--turmeric-soft); border-radius: 10px; padding: 10px 14px; margin: 18px 0 0; }
+  h2 { font-size: 21px; margin: 44px 0 12px; }
+  .panel, .card, details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .card { padding: 18px 20px; }
+  svg { width: 100%; height: auto; display: block; }
+  .n { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  .n-hot { fill: var(--chili-soft); stroke: var(--chili); stroke-width: 2; }
+  .n-save { fill: var(--leaf-soft); stroke: var(--leaf); stroke-width: 1.5; }
+  .t { fill: var(--ink); font: 600 13px -apple-system, sans-serif; }
+  .ts { fill: var(--muted); font: 11px -apple-system, sans-serif; }
+  .ar { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+  .stepper { padding: 20px; }
+  .stepper .num { font-size: 13px; font-weight: 700; color: var(--chili); text-transform: uppercase; letter-spacing: .05em; }
+  .stepper h3 { margin: 4px 0 8px; font-size: 20px; }
+  .stepper p { margin: 0; color: var(--muted); min-height: 3.2em; }
+  .ctrl { display: flex; gap: 8px; align-items: center; margin-top: 16px; }
+  .ctrl button { font: inherit; font-weight: 600; border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    padding: 8px 16px; border-radius: 99px; cursor: pointer; }
+  .ctrl button:disabled { opacity: .4; cursor: default; }
+  .dots { display: flex; gap: 6px; margin-left: auto; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--chili); }
+  .mock { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .mock { grid-template-columns: 1fr; } }
+  .mock h4 { margin: 0 0 10px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .ing { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; background: var(--bg); }
+  .ing button { margin-left: auto; border: 0; background: var(--turmeric-soft); color: var(--turmeric); border-radius: 6px;
+    cursor: pointer; font-size: 15px; padding: 2px 8px; }
+  .ing.sw { background: var(--hl); }
+  .ing.sw::before { content: "↺"; color: var(--chili); font-weight: 700; }
+  .macros { display: flex; gap: 10px; margin-top: 12px; }
+  .macros div { flex: 1; background: var(--bg); border-radius: 8px; padding: 8px 10px; text-align: center; }
+  .macros b { display: block; font-size: 20px; color: var(--chili); transition: color .3s; }
+  .macros small { color: var(--muted); }
+  .fine { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  details { margin-bottom: 10px; }
+  summary { cursor: pointer; padding: 14px 18px; font-weight: 600; list-style: none; display: flex; gap: 10px; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-size: 20px; }
+  details[open] summary::after { content: "–"; }
+  details .body { padding: 0 18px 16px; }
+  details ul { margin: 6px 0 0; padding-left: 20px; }
+  .crit { list-style: none; padding-left: 0 !important; }
+  .crit li::before { content: "☐ "; color: var(--leaf); }
+  .pill { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px;
+    background: var(--chili-soft); color: var(--chili); }
+  .pill.g { background: var(--leaf-soft); color: var(--leaf); }
+  .open { border-left: 4px solid var(--turmeric); }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .cols ul { margin: 6px 0 0; padding-left: 20px; color: var(--muted); }
+  .cols h3 { margin: 0; font-size: 16px; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">PRD · approved</span>
+  <h1>Desi<span>Tadka</span></h1>
+  <p class="lede">Western fitness reels, translated into recipes and workouts people in India can actually use.</p>
+  <p class="grow"><strong>Scope said:</strong> "get a clean card." <strong>Now we know exactly what that means:</strong> original first, swap icons on every ingredient, highlighted changes, live protein and calories, and a saved collection.</p>
+
+  <h2>The core journey</h2>
+  <div class="card">
+    <svg viewBox="0 0 860 210" role="img" aria-label="Journey: Home, paste reel link, original card, swap items, see highlights and updated nutrition, Save, back to Home list.">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--muted)"/></marker></defs>
+      <rect class="n" x="5" y="40" width="120" height="70" rx="12"/><text class="t" x="65" y="72" text-anchor="middle">Home</text><text class="ts" x="65" y="90" text-anchor="middle">saved cards + link box</text>
+      <path class="ar" d="M125 75 H 150" marker-end="url(#a)"/>
+      <rect class="n" x="155" y="40" width="120" height="70" rx="12"/><text class="t" x="215" y="72" text-anchor="middle">Paste reel</text><text class="ts" x="215" y="90" text-anchor="middle">recipe or workout</text>
+      <path class="ar" d="M275 75 H 300" marker-end="url(#a)"/>
+      <rect class="n" x="305" y="40" width="120" height="70" rx="12"/><text class="t" x="365" y="72" text-anchor="middle">Original card</text><text class="ts" x="365" y="90" text-anchor="middle">as shown in reel</text>
+      <path class="ar" d="M425 75 H 450" marker-end="url(#a)"/>
+      <rect class="n-hot" x="455" y="30" width="130" height="90" rx="12"/><text class="t" x="520" y="66" text-anchor="middle">Swap ↺</text><text class="ts" x="520" y="84" text-anchor="middle">AI suggests or you type</text><text class="ts" x="520" y="100" text-anchor="middle">workouts: max 3</text>
+      <path class="ar" d="M585 75 H 610" marker-end="url(#a)"/>
+      <rect class="n" x="615" y="40" width="120" height="70" rx="12"/><text class="t" x="675" y="72" text-anchor="middle">Highlighted</text><text class="ts" x="675" y="90" text-anchor="middle">+ new protein/kcal</text>
+      <path class="ar" d="M735 75 H 755" marker-end="url(#a)"/>
+      <rect class="n-save" x="760" y="40" width="95" height="70" rx="12"/><text class="t" x="807" y="80" text-anchor="middle">Save</text>
+      <path class="ar" d="M807 110 C 807 190, 65 190, 65 115" marker-end="url(#a)"/>
+      <text class="ts" x="430" y="182" text-anchor="middle">appears in Home list · tap to view details anytime</text>
+    </svg>
+  </div>
+
+  <h2>Step through it</h2>
+  <div class="panel stepper" id="stepper">
+    <div class="num" id="sn"></div><h3 id="st"></h3><p id="sd"></p>
+    <div class="ctrl"><button id="prev">← Back</button><button id="next">Next →</button><div class="dots" id="dots"></div></div>
+  </div>
+
+  <h2>Try the swap</h2>
+  <div class="panel card">
+    <div class="mock">
+      <div>
+        <h4>High-protein chicken bowl (illustrative)</h4>
+        <div id="ings"></div>
+        <div class="macros"><div><b id="pro">42g</b><small>protein</small></div><div><b id="cal">560</b><small>kcal</small></div></div>
+      </div>
+      <div>
+        <h4>What this shows</h4>
+        <p style="margin:0;color:var(--muted)">Tap ↺ to swap an ingredient for an Indian alternative. Swapped items turn highlighted, and protein and calories update.</p>
+        <p class="fine">Example values are made up to illustrate the interaction; they aren't part of the plan.</p>
+        <div class="ctrl"><button id="veg">Make it vegetarian</button><button id="reset">Reset</button></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Screens</h2>
+  <div class="cols">
+    <div class="card"><h3>Home</h3><ul><li>Link box at the top</li><li>Saved recipe + workout cards</li><li>Tap a card → Card Detail</li></ul></div>
+    <div class="card"><h3>Convert view</h3><ul><li>Original card from the reel</li><li>Swap icons + "make it vegetarian"</li><li>Save button</li></ul></div>
+    <div class="card"><h3>Card Detail</h3><ul><li>Final saved version</li><li>Recipe: steps, image, macros</li><li>Workout: names, reps, rounds, images</li></ul></div>
+  </div>
+
+  <h2>Behaviors & how you'll know they work</h2>
+  <details open><summary><span class="pill">Star</span>Recipe swaps</summary><div class="body"><ul class="crit">
+    <li>Tapping a swap icon shows at least one Indian-ingredient suggestion</li>
+    <li>Typing a custom replacement swaps that ingredient</li>
+    <li>"Make it vegetarian" replaces every non-vegetarian ingredient</li>
+    <li>Swapped ingredients are visibly highlighted; others aren't</li>
+    <li>Protein and calories change after a swap that affects them</li></ul></div></details>
+  <details><summary>Paste a reel</summary><div class="body"><ul class="crit">
+    <li>Recipe reel link → recipe card with the original recipe</li>
+    <li>Workout reel link → workout card with the original plan</li>
+    <li>Not a valid link → "Wrong link" before any processing</li>
+    <li>Valid but inaccessible → "Unable to access, please check"</li></ul></div></details>
+  <details><summary>Recipe card</summary><div class="body"><p style="margin:0">Dish name, ingredients, number of steps, steps, protein, calories, prep time, picture.</p><ul class="crit"><li>All fields appear for a recipe reel</li><li>Original shows a reel frame; after a swap, an AI-generated picture of the new version</li></ul></div></details>
+  <details><summary>Workout card & swaps</summary><div class="body"><p style="margin:0">Workout name, exercises, reps, rounds, frequency, images. Same swap icon pattern (assumption). Reel frames for originals, AI images for swapped-in exercises.</p><ul class="crit">
+    <li>All fields appear for a workout reel</li>
+    <li>Swapping an exercise replaces every occurrence in the plan</li>
+    <li>A 4th swap is blocked with a short message</li></ul></div></details>
+  <details><summary><span class="pill g">Save</span>Save & Home list</summary><div class="body"><ul class="crit">
+    <li>After Save, the card appears on Home</li>
+    <li>Saved cards are still there after reopening</li>
+    <li>Tapping a saved card shows the final version with swaps applied</li></ul></div></details>
+
+  <h2>States</h2>
+  <div class="cols">
+    <div class="card"><h3>Empty Home</h3><ul><li>Link box + inviting empty message</li></ul></div>
+    <div class="card"><h3>Loading</h3><ul><li>Shows DesiTadka is working</li></ul></div>
+    <div class="card"><h3>Unsaved card</h3><ul><li>Leaving without Save discards it</li></ul></div>
+    <div class="card"><h3>Invalid link</h3><ul><li>Checked on entry → "Wrong link"</li></ul></div>
+    <div class="card"><h3>Can't access reel</h3><ul><li>"Unable to access, please check"</li></ul></div>
+    <div class="card"><h3>Not food or fitness</h3><ul><li>Short message saying so (assumption)</li></ul></div>
+  </div>
+
+  <h2>Building now vs. deferred</h2>
+  <details open><summary><span class="pill g">Now</span>What we're building</summary><div class="body"><ul>
+    <li>Home with link box + saved cards</li><li>Reel link → original recipe or workout card</li>
+    <li>Recipe swaps, vegetarian conversion, highlights, live macros</li><li>Workout swaps (max 3)</li><li>Save, view, persist</li></ul></div></details>
+  <details><summary>Deferred</summary><div class="body"><ul>
+    <li>Tracker (workouts done, calories eaten)</li><li>YouTube links</li><li>Accounts / sync</li><li>Editing or deleting saved cards</li></ul></div></details>
+  <details><summary>Non-goals</summary><div class="body"><ul>
+    <li>One-stop fitness app</li><li>Chat interface</li><li>Unlimited workout rewrites</li></ul></div></details>
+
+  <h2>Open questions</h2>
+  <div class="card open"><ul style="margin:0;padding-left:20px">
+    <li><strong>Getting content out of a reel:</strong> technical, solved in spec.</li></ul></div>
+
+  <footer>Companion to <code>devpost/prd.md</code>, which is the source of truth.</footer>
+</main>
+<script>
+  const steps = [
+    ["Open DesiTadka", "Home shows your saved recipe and workout cards, with a box at the top to paste a reel link."],
+    ["Paste a reel", "Paste an Instagram reel link. It's validated right away (\"Wrong link\" if not), then DesiTadka works out whether it's a recipe or a workout."],
+    ["See the original", "A card shows the recipe or workout as it appears in the reel, with a frame from the reel as its picture."],
+    ["Choose what to swap", "Recipe: tap ↺ on any ingredient, or make it vegetarian. Workout: swap up to 3 exercises, and each is replaced everywhere it appears."],
+    ["See what changed", "Swapped items are highlighted, with a new AI-generated picture. For recipes, protein and calories update."],
+    ["Save", "Tap Save. The final version is added to your Home list. Leaving without saving discards it."],
+    ["Use it later", "Tap a saved card to cook or work out without rewatching the reel."]
+  ];
+  let i = 0;
+  const dots = document.getElementById('dots');
+  steps.forEach(() => dots.appendChild(document.createElement('i')));
+  function render() {
+    document.getElementById('sn').textContent = `Step ${i + 1} of ${steps.length}`;
+    document.getElementById('st').textContent = steps[i][0];
+    document.getElementById('sd').textContent = steps[i][1];
+    document.getElementById('prev').disabled = i === 0;
+    document.getElementById('next').disabled = i === steps.length - 1;
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+  }
+  document.getElementById('prev').onclick = () => { i--; render(); };
+  document.getElementById('next').onclick = () => { i++; render(); };
+  render();
+
+  const base = [
+    { n: "Chicken breast, 200g", s: "Paneer, 200g", veg: true, dp: -6, dc: 150 },
+    { n: "Quinoa, 1 cup", s: "Dalia (broken wheat), 1 cup", dp: -2, dc: -20 },
+    { n: "Avocado, ½", s: "Hung curd, ½ cup", dp: 5, dc: -40 },
+    { n: "Kale", s: "Palak (spinach)", dp: 0, dc: -5 },
+  ];
+  let state;
+  function reset() { state = base.map(x => ({ ...x, on: false })); draw(); }
+  function draw() {
+    const box = document.getElementById('ings'); box.innerHTML = '';
+    let p = 42, c = 560;
+    state.forEach((x, k) => {
+      if (x.on) { p += x.dp; c += x.dc; }
+      const row = document.createElement('div'); row.className = 'ing' + (x.on ? ' sw' : '');
+      row.append(document.createTextNode(x.on ? x.s : x.n));
+      const b = document.createElement('button'); b.textContent = '↺'; b.title = 'Swap';
+      b.setAttribute('aria-label', 'Swap ' + x.n);
+      b.onclick = () => { x.on = !x.on; draw(); };
+      row.append(b); box.append(row);
+    });
+    document.getElementById('pro').textContent = p + 'g';
+    document.getElementById('cal').textContent = c;
+  }
+  document.getElementById('veg').onclick = () => { state.forEach(x => { if (x.veg) x.on = true; }); draw(); };
+  document.getElementById('reset').onclick = reset;
+  reset();
+</script>
+</body>
+</html>

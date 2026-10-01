@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DesiTadka — Spec</title>
+<style>
+  :root {
+    --bg: #fdf6ee; --surface: #ffffff; --ink: #2a1a10; --muted: #7a6455; --line: #f0dfcf;
+    --chili: #d9480f; --chili-soft: #fff0e6; --turmeric: #f08c00; --turmeric-soft: #fff7e0;
+    --leaf: #2b8a3e; --leaf-soft: #ebfbee; --sky: #1c7ed6; --sky-soft: #e7f5ff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a120c; --surface: #26190f; --ink: #f8ece0; --muted: #b59e8c; --line: #3d2a1c;
+      --chili: #ff7a45; --chili-soft: #3a1d0e; --turmeric: #ffb347; --turmeric-soft: #35260c;
+      --leaf: #69db7c; --leaf-soft: #17291b; --sky: #74c0fc; --sky-soft: #15283a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 40px 16px 80px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--chili); background: var(--chili-soft); padding: 3px 10px; border-radius: 99px; }
+  h1 { font-size: clamp(34px, 7vw, 50px); line-height: 1.05; margin: 14px 0 8px; }
+  h1 span { color: var(--chili); }
+  .lede { font-size: 18px; color: var(--muted); margin: 0; }
+  h2 { font-size: 21px; margin: 44px 0 12px; }
+  .card, details, .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .card { padding: 18px 20px; }
+  .card p { margin: 0 0 10px; } .card p:last-child { margin: 0; }
+  code { font: 13.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--bg); padding: 1px 6px; border-radius: 5px; }
+  svg { width: 100%; height: auto; display: block; }
+  .n { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  .n-hot { fill: var(--chili-soft); stroke: var(--chili); stroke-width: 2; }
+  .n-ai { fill: var(--sky-soft); stroke: var(--sky); stroke-width: 1.5; }
+  .n-data { fill: var(--leaf-soft); stroke: var(--leaf); stroke-width: 1.5; }
+  .n-tool { fill: var(--turmeric-soft); stroke: var(--turmeric); stroke-width: 1.5; }
+  .t { fill: var(--ink); font: 600 13px -apple-system, sans-serif; }
+  .ts { fill: var(--muted); font: 11px -apple-system, sans-serif; }
+  .ar { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+  .dim { opacity: .25; transition: opacity .2s; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 99px; padding: 3px; background: var(--surface); margin-bottom: 12px; }
+  .seg button { font: inherit; font-weight: 600; border: 0; background: transparent; color: var(--ink); padding: 6px 16px; border-radius: 99px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .modes { grid-template-columns: 1fr; } }
+  .mode h3 { margin: 0 0 6px; font-size: 17px; }
+  .mode ul { margin: 0; padding-left: 20px; color: var(--muted); }
+  .mode.on { border-color: var(--chili); box-shadow: 0 0 0 2px var(--chili-soft); }
+  .stepper { padding: 20px; }
+  .stepper .num { font-size: 13px; font-weight: 700; color: var(--chili); text-transform: uppercase; letter-spacing: .05em; }
+  .stepper h3 { margin: 4px 0 6px; font-size: 20px; }
+  .stepper p { margin: 0 0 10px; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; min-height: 30px; }
+  .chips span { font-size: 12.5px; padding: 3px 10px; border-radius: 99px; background: var(--bg); border: 1px solid var(--line); }
+  .chips span.prd { background: var(--chili-soft); border-color: transparent; color: var(--chili); }
+  .ctrl { display: flex; gap: 8px; align-items: center; margin-top: 16px; }
+  .ctrl button { font: inherit; font-weight: 600; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 8px 16px; border-radius: 99px; cursor: pointer; }
+  .ctrl button:disabled { opacity: .4; cursor: default; }
+  .dots { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--chili); }
+  details { margin-bottom: 10px; }
+  summary { cursor: pointer; padding: 14px 18px; font-weight: 600; list-style: none; display: flex; gap: 10px; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary small { font-weight: 400; color: var(--muted); }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-size: 20px; }
+  details[open] summary::after { content: "–"; }
+  details .body { padding: 0 18px 16px; }
+  details .body p { margin: 0 0 8px; }
+  pre { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; overflow-x: auto; font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .sw { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .sw b { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--line); display: inline-block; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .verify { border-left: 4px solid var(--turmeric); }
+  .verify li { margin-bottom: 6px; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Spec · approved</span>
+  <h1>Desi<span>Tadka</span> — how it's built</h1>
+  <p class="lede">One Next.js app on your laptop, opened on your phone. yt-dlp + ffmpeg pull the reel apart; OpenAI (by API key or your local Codex) turns it into a card.</p>
+
+  <h2>The system at a glance</h2>
+  <div class="seg" role="group" aria-label="AI mode">
+    <button aria-pressed="false" data-mode="api">API key mode</button>
+    <button aria-pressed="true" data-mode="codex">Local Codex mode</button>
+  </div>
+  <div class="card">
+    <svg viewBox="0 0 880 330" role="img" aria-label="Phone browser talks to the Next.js server on the laptop. The server runs yt-dlp and ffmpeg, sends frames and caption to either the OpenAI API or the local Codex CLI, and saves cards to data/cards.json.">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--muted)"/></marker></defs>
+      <rect class="n" x="10" y="125" width="140" height="80" rx="14"/>
+      <text class="t" x="80" y="160" text-anchor="middle">📱 Phone browser</text>
+      <text class="ts" x="80" y="180" text-anchor="middle">same Wi-Fi</text>
+      <path class="ar" d="M150 165 H 215" marker-end="url(#a)"/>
+      <text class="ts" x="183" y="155" text-anchor="middle">http</text>
+      <rect class="n-hot" x="220" y="95" width="190" height="140" rx="16"/>
+      <text class="t" x="315" y="130" text-anchor="middle">Next.js on your laptop</text>
+      <text class="ts" x="315" y="152" text-anchor="middle">pages + /api routes</text>
+      <text class="ts" x="315" y="170" text-anchor="middle">validate · extract · suggest</text>
+      <text class="ts" x="315" y="188" text-anchor="middle">apply · save</text>
+      <rect class="n-tool" x="250" y="10" width="130" height="56" rx="12"/>
+      <text class="t" x="315" y="35" text-anchor="middle">yt-dlp + ffmpeg</text>
+      <text class="ts" x="315" y="53" text-anchor="middle">video · caption · frames</text>
+      <path class="ar" d="M315 95 V 70" marker-end="url(#a)"/>
+      <g id="g-api">
+        <rect class="n-ai" x="500" y="40" width="170" height="80" rx="14"/>
+        <text class="t" x="585" y="72" text-anchor="middle">OpenAI API</text>
+        <text class="ts" x="585" y="92" text-anchor="middle">cards + swaps + images</text>
+        <path class="ar" d="M410 140 C 450 140, 460 80, 495 80" marker-end="url(#a)"/>
+        <rect class="n-ai" x="710" y="40" width="160" height="80" rx="14"/>
+        <text class="t" x="790" y="72" text-anchor="middle">🖼 New picture</text>
+        <text class="ts" x="790" y="92" text-anchor="middle">after a swap</text>
+        <path class="ar" d="M670 80 H 705" marker-end="url(#a)"/>
+      </g>
+      <g id="g-codex">
+        <rect class="n-ai" x="500" y="150" width="170" height="80" rx="14"/>
+        <text class="t" x="585" y="182" text-anchor="middle">Codex CLI</text>
+        <text class="ts" x="585" y="202" text-anchor="middle">CODEX_PATH exec …</text>
+        <path class="ar" d="M410 175 C 450 175, 460 190, 495 190" marker-end="url(#a)"/>
+        <rect class="n-ai" x="710" y="150" width="160" height="80" rx="14"/>
+        <text class="t" x="790" y="182" text-anchor="middle">Reel frame</text>
+        <text class="ts" x="790" y="202" text-anchor="middle">+ "swapped" badge</text>
+        <path class="ar" d="M670 190 H 705" marker-end="url(#a)"/>
+      </g>
+      <rect class="n-data" x="220" y="265" width="190" height="56" rx="12"/>
+      <text class="t" x="315" y="290" text-anchor="middle">data/cards.json</text>
+      <text class="ts" x="315" y="308" text-anchor="middle">+ public/media/ frames</text>
+      <path class="ar" d="M315 235 V 260" marker-end="url(#a)"/>
+    </svg>
+  </div>
+  <div class="modes" style="margin-top:14px">
+    <div class="card mode" id="m-api"><h3>API key mode</h3><ul><li><code>AI_MODE=api</code> + <code>OPENAI_API_KEY</code></li><li>Calls the OpenAI API directly</li><li>Swaps get an AI-generated picture</li></ul></div>
+    <div class="card mode on" id="m-codex"><h3>Local Codex mode</h3><ul><li><code>AI_MODE=codex</code> + <code>CODEX_PATH</code></li><li>Runs the Codex CLI you're logged into, so no key is needed</li><li>No image generation: reel frame + "swapped" badge</li></ul></div>
+  </div>
+
+  <h2>Follow one reel through the system</h2>
+  <div class="panel stepper">
+    <div class="num" id="sn"></div><h3 id="st"></h3><p id="sd"></p>
+    <div class="chips" id="sc"></div>
+    <div class="ctrl"><button id="prev">← Back</button><button id="next">Next →</button><div class="dots" id="dots"></div></div>
+  </div>
+
+  <h2>Components</h2>
+  <details open><summary>Convert View <small>app/convert/page.tsx</small></summary><div class="body"><p>Original card, "convert?" prompt, swap icons, Make it vegetarian, workout swap counter (max 3), Save. The in-progress card lives in React state and is discarded unless saved.</p><div class="chips"><span class="prd">Recipe Swaps (the star)</span><span class="prd">Workout Swaps</span></div></div></details>
+  <details><summary>AI Provider <small>lib/ai/</small></summary><div class="body"><p>One interface, two implementations chosen by <code>AI_MODE</code>: <code>extractCard</code>, <code>suggestSwaps</code>, <code>applySwaps</code>, <code>makeVegetarian</code>, <code>generateImage</code>. Prompts tell the model the audience is in India and to use commonly available Indian ingredients. Every response is validated with zod, with one retry.</p><div class="chips"><span>openaiApi.ts</span><span>codexCli.ts</span><span>prompts.ts</span></div></div></details>
+  <details><summary>Reel Extractor <small>lib/reel.ts</small></summary><div class="body"><p>yt-dlp downloads the video and info JSON (the caption is in <code>description</code>); ffmpeg saves 4–6 frames to <code>public/media/&lt;id&gt;/</code>. A typed "inaccessible" error drives the fallback.</p><div class="chips"><span class="prd">Paste a Reel</span></div></div></details>
+  <details><summary>Home Page <small>app/page.tsx</small></summary><div class="body"><p>Link box with instant validation ("Wrong link"), and a saved list with thumbnail, name, and type tag. Shows the empty state when there are no cards, and a setup banner when neither a key nor a Codex path is set.</p><div class="chips"><span class="prd">Save and Home List</span><span class="prd">States and Boundaries</span></div></div></details>
+  <details><summary>Recipe Card · Workout Card · Swap Sheet <small>components/</small></summary><div class="body"><p>Shared display for Convert and Detail. Swapped items get a turmeric highlight and a ↺ marker. The Swap Sheet is a bottom sheet with AI suggestions plus "type your own."</p><div class="chips"><span class="prd">Recipe Card</span><span class="prd">Workout Card</span></div></div></details>
+  <details><summary>Card Detail · Card Store <small>app/cards/[id] · lib/store.ts</small></summary><div class="body"><p>Read-only saved card. The store reads and writes <code>data/cards.json</code> on the laptop, so the phone and laptop share one list.</p><div class="chips"><span class="prd">Save and Home List</span></div></div></details>
+
+  <h2>Where data lives</h2>
+  <div class="table-wrap"><table>
+    <tr><th>Data</th><th>Lives in</th><th>When you come back</th></tr>
+    <tr><td>Saved cards</td><td><code>data/cards.json</code></td><td>Still there, on any device</td></tr>
+    <tr><td>Frames + generated images</td><td><code>public/media/&lt;id&gt;/</code></td><td>Still there</td></tr>
+    <tr><td>Card being converted</td><td>React state</td><td>Gone unless saved</td></tr>
+    <tr><td>Downloaded video</td><td><code>tmp/</code></td><td>Temporary</td></tr>
+  </table></div>
+
+  <h2>Look and feel</h2>
+  <div class="card">
+    <p><strong>Warm and spicy.</strong> Baloo 2 for headings, Inter for body text. Mobile-first single column, rounded cards, and the reel frame as a hero image. Playful copy ("Adding tadka…") with plain error messages.</p>
+    <div class="swatches">
+      <div class="sw"><b style="background:#D9480F"></b>Chili</div>
+      <div class="sw"><b style="background:#F08C00"></b>Turmeric (swaps)</div>
+      <div class="sw"><b style="background:#FDF6EE"></b>Cream</div>
+      <div class="sw"><b style="background:#2A1A10"></b>Brown text</div>
+      <div class="sw"><b style="background:#2B8A3E"></b>Leaf (Save)</div>
+    </div>
+  </div>
+
+  <h2>File structure</h2>
+<pre>ai-build/
+├── app/
+│   ├── page.tsx                # Home
+│   ├── convert/page.tsx        # Convert view
+│   ├── cards/[id]/page.tsx     # Card Detail
+│   └── api/  extract · suggest · apply · cards · cards/[id]
+├── components/  RecipeCard · WorkoutCard · SwapSheet · LinkInput
+├── lib/
+│   ├── validateLink.ts · reel.ts · store.ts · schema.ts
+│   └── ai/  index · prompts · openaiApi · codexCli
+├── data/cards.json · public/media/ · tmp/   # gitignored
+├── .env.example
+└── devpost/</pre>
+
+  <h2>When things break</h2>
+  <div class="table-wrap"><table>
+    <tr><th>What breaks</th><th>What you see</th></tr>
+    <tr><td>Not an Instagram link</td><td>"Wrong link" (no server call)</td></tr>
+    <tr><td>yt-dlp blocked / private reel</td><td>"Unable to access, please check" + paste-caption box</td></tr>
+    <tr><td>Broken AI JSON</td><td>One retry, then "Couldn't read this reel, try again"</td></tr>
+    <tr><td>Not a recipe or workout</td><td>"This doesn't look like a recipe or workout"</td></tr>
+    <tr><td>No key and no Codex path</td><td>Setup banner on Home</td></tr>
+  </table></div>
+
+  <h2>Verify first in the build</h2>
+  <div class="card verify"><ul style="margin:0;padding-left:20px">
+    <li>yt-dlp can fetch one real public reel and its caption.</li>
+    <li><code>codex exec --help</code>: flags for attaching images and getting JSON back.</li>
+    <li>Current OpenAI model names (kept in <code>.env.local</code>, not hardcoded).</li>
+    <li>Nutrition is AI-estimated, so label it "approx."</li>
+  </ul></div>
+
+  <footer>Companion to <code>devpost/spec.md</code>, which is the source of truth.</footer>
+</main>
+<script>
+  const setMode = m => {
+    document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m));
+    document.getElementById('g-api').classList.toggle('dim', m !== 'api');
+    document.getElementById('g-codex').classList.toggle('dim', m !== 'codex');
+    document.getElementById('m-api').classList.toggle('on', m === 'api');
+    document.getElementById('m-codex').classList.toggle('on', m === 'codex');
+  };
+  document.querySelectorAll('.seg button').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+  setMode('codex');
+
+  const steps = [
+    ["Open Home", "The page asks the server for saved cards; the server reads data/cards.json.", ["app/page.tsx", "lib/store.ts", "GET /api/cards"], ["Save and Home List"]],
+    ["Paste a link", "The browser checks the format instantly. Not an Instagram reel → \"Wrong link\", and nothing is sent.", ["components/LinkInput.tsx", "lib/validateLink.ts"], ["Paste a Reel"]],
+    ["Pull the reel apart", "POST /api/extract → yt-dlp downloads the video + caption → ffmpeg saves 4–6 frames. If blocked: \"Unable to access, please check\" + paste-caption box.", ["lib/reel.ts", "app/api/extract/route.ts"], ["Paste a Reel"]],
+    ["Read it with AI", "Frames + caption go to the OpenAI API or Codex CLI, which return JSON labeled recipe / workout / other. zod checks it.", ["lib/ai/index.ts", "lib/ai/prompts.ts", "lib/schema.ts"], ["Recipe Card", "Workout Card"]],
+    ["Show the original", "The Convert view shows the original card with swap icons and the \"Add some tadka?\" prompt.", ["app/convert/page.tsx", "components/RecipeCard.tsx"], ["Recipe Card"]],
+    ["Suggest swaps", "Tap ↺ → POST /api/suggest → 2–4 Indian alternatives in a bottom sheet, or type your own.", ["components/SwapSheet.tsx", "app/api/suggest/route.ts"], ["Recipe Swaps (the star)"]],
+    ["Apply", "POST /api/apply → updated card with new protein/calories and swapped items marked. API mode also generates a picture; Codex mode adds a \"swapped\" badge.", ["app/api/apply/route.ts"], ["Recipe Swaps (the star)", "Workout Swaps"]],
+    ["Save", "POST /api/cards appends the card to data/cards.json. Back on Home, it's in the list on any device.", ["app/api/cards/route.ts", "lib/store.ts"], ["Save and Home List"]],
+    ["Use it later", "Tap a saved card → Card Detail. Cook or work out without rewatching.", ["app/cards/[id]/page.tsx"], ["Save and Home List"]]
+  ];
+  let i = 0; const dots = document.getElementById('dots');
+  steps.forEach(() => dots.appendChild(document.createElement('i')));
+  function render() {
+    const [t, d, files, prd] = steps[i];
+    document.getElementById('sn').textContent = `Step ${i + 1} of ${steps.length}`;
+    document.getElementById('st').textContent = t;
+    document.getElementById('sd').textContent = d;
+    const c = document.getElementById('sc'); c.innerHTML = '';
+    prd.forEach(p => { const s = document.createElement('span'); s.className = 'prd'; s.textContent = 'PRD: ' + p; c.append(s); });
+    files.forEach(f => { const s = document.createElement('span'); s.textContent = f; c.append(s); });
+    document.getElementById('prev').disabled = i === 0;
+    document.getElementById('next').disabled = i === steps.length - 1;
+    [...dots.children].forEach((x, k) => x.classList.toggle('on', k === i));
+  }
+  document.getElementById('prev').onclick = () => { i--; render(); };
+  document.getElementById('next').onclick = () => { i++; render(); };
+  render();
+</script>
+</body>
+</html>
