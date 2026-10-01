@@ -61,27 +61,27 @@ Build mode: fast (learner asked to build everything, then get one explanation of
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — folded into the final review session at the learner's request (see Revisions)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Early usable behavior explored — folded into the final review session at the learner's request (see Revisions)
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
-Added at the learner's request ("build all your suggestions"), built and mechanically verified; each still needs the learner to try it:
-- [ ] Home: search plus High protein / Vegetarian / Under 20 min filters; favorite and delete saved cards
-- [ ] "Type an idea" input that makes a card without a reel — moved to its own tab after the learner reported "the option to add reels is missing"; the reel box (recipe or fitness) is back as the default
-- [ ] Step-by-step progress while converting (Reading reel → Writing the card → Plating)
-- [ ] Plan page (`/plan`) — shopping list removed; now a dated calendar (‹ › weeks, today highlighted, past days kept) at the learner's request; card detail adds to the next 7 dates
-- [ ] Share a card as text or image; light/dark toggle; logo and tagline in the header
+Added at the learner's request ("build all your suggestions"), built, mechanically verified, and tried by the learner during final review:
+- [x] Home: search plus High protein / Vegetarian / Under 20 min filters; favorite and delete saved cards
+- [x] "Type an idea" input that makes a card without a reel — moved to its own tab after the learner reported "the option to add reels is missing"; the reel box (recipe or fitness) is back as the default
+- [x] Step-by-step progress while converting (Reading reel → Writing the card → Plating)
+- [x] Plan page (`/plan`) — shopping list removed; now a dated calendar (‹ › weeks, today highlighted, past days kept) at the learner's request; card detail adds to the next 7 dates
+- [x] Share a card as text or image; light/dark toggle; logo and tagline in the header
 
-- [ ] Change an ingredient's amount from the swap sheet; protein and calories recalculate (learner request)
-- [ ] Swap suggestions for every item are fetched once when a card opens, and the sheet shows a clear loading message (learner: "looks weird empty")
-- [ ] "How often" removed from workout cards and shared text (learner request)
+- [x] Change an ingredient's amount from the swap sheet; protein and calories recalculate (learner request)
+- [x] Swap suggestions for every item are fetched once when a card opens, and the sheet shows a clear loading message (learner: "looks weird empty")
+- [x] "How often" removed from workout cards and shared text (learner request)
 
-- [ ] Missing ingredient amounts are estimated by the AI and marked "~" (learner approved the recommendation)
-- [ ] Emoji replaced with line icons and orange gradients with flat placeholders, keeping the orange theme and font (learner chose small changes)
-- [ ] Changed items are labelled "Personalized" instead of "swapped" on cards and the Home list (learner request)
+- [x] Missing ingredient amounts are estimated by the AI and marked "~" (learner approved the recommendation)
+- [x] Emoji replaced with line icons and orange gradients with flat placeholders, keeping the orange theme and font (learner chose small changes)
+- [x] Changed items are labelled "Personalized" instead of "swapped" on cards and the Home list (learner request)
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship ("this looks good now")
 
 ## Code Tour and App Map
 
