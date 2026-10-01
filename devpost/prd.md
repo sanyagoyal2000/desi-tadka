@@ -92,6 +92,13 @@ Shows: workout name, exercises, reps, rounds, frequency, and images.
   - [ ] Saved cards are still there after closing and reopening the app.
   - [ ] Tapping a saved card shows the final version, with swaps applied.
 
+### Getting Reels In and Getting Back to Them
+Added at final review. The learner saves reels meaning to cook them "sometime", then forgets for days or months, and picks 1–2 exercises from a workout but loses them in Instagram messages to themselves.
+- **Share from Instagram (iPhone):** an Apple Shortcut in the Share menu opens `/?url=<reel>`, and DesiTadka starts converting immediately. Works on the same Wi-Fi while the laptop runs the app.
+- **Remind me:** right after Save, the user lands on the saved card with a prompt to pick a day. Choosing a day and time adds the card to the Plan and opens a calendar event (`.ics`) with an alert, which the iPhone adds to Apple Calendar. The phone does the nudging.
+- **My routine:** on a saved workout, each exercise has "+ Routine". Picked exercises collect on Home with their reps, picture and source workout, and a weekly calendar nudge (chosen days and time) repeats.
+- Not included: notifications sent by DesiTadka itself (needs hosting), and reading Instagram's Saved folder or messages (no access).
+
 ## States and Boundaries
 - **First use / empty Home:** no saved cards yet. Home shows the link box and an empty-list message inviting them to paste their first reel.
 - **Loading:** after submitting a link, the user sees that DesiTadka is working on it.

@@ -64,6 +64,19 @@ export const PlanSchema = z.object({
 export type Plan = z.infer<typeof PlanSchema>;
 export const emptyPlan = (): Plan => ({ days: {} });
 
+// ---- My routine: single exercises picked from saved workouts (data/routine.json) ----
+
+export const RoutineItemSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+  reps: z.string(),
+  image: z.string(),
+  cardId: z.string(),
+  cardTitle: z.string(),
+  addedAt: z.string(),
+});
+export type RoutineItem = z.infer<typeof RoutineItemSchema>;
+
 // ---- Shapes the AI must return. Kept flat and fully "required" so both the
 // OpenAI API (strict JSON schema) and `codex exec --output-schema` accept them. ----
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LinkInput from "@/components/LinkInput";
 import SavedList from "@/components/SavedList";
+import RoutineSection from "@/components/RoutineSection";
 import type { Card } from "@/lib/schema";
 import { clearDraft, saveDraft } from "@/lib/draft";
 import { streamExtract, type ExtractStep } from "@/lib/progress";
@@ -35,6 +36,16 @@ export default function Home() {
       .then((r) => r.json())
       .then((d) => setCards(d.cards ?? []))
       .catch(() => setCards([]));
+
+    // Shared from Instagram via the iPhone shortcut: /?url=<reel link> converts it straight away.
+    const shared = new URLSearchParams(window.location.search).get("url");
+    const reel = shared?.match(/https?:\/\/\S+/)?.[0];
+    if (reel) {
+      window.history.replaceState(null, "", "/");
+      setTimeout(() => extract({ url: reel }));
+    }
+    // extract only reads setters, so running this once on load is enough
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function extract(payload: { url?: string; caption?: string; idea?: string }) {
@@ -152,6 +163,8 @@ export default function Home() {
         onToggleFavorite={toggleFavorite}
         onDelete={remove}
       />
+
+      <RoutineSection />
     </main>
   );
 }

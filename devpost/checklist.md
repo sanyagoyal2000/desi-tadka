@@ -81,7 +81,11 @@ Added at the learner's request ("build all your suggestions"), built, mechanical
 - [x] Emoji replaced with line icons and orange gradients with flat placeholders, keeping the orange theme and font (learner chose small changes)
 - [x] Changed items are labelled "Personalized" instead of "swapped" on cards and the Home list (learner request)
 
-- [x] Final review complete — feedback resolved and learner confirms ready to ship ("this looks good now")
+- [ ] Share a reel from Instagram on iPhone via a Shortcut (`/?url=` starts converting right away)
+- [ ] "Remind me" on saved cards: Save lands on the card, pick day + time → added to Plan and Apple Calendar
+- [ ] "My routine": "+ Routine" on single exercises, collected on Home with a weekly calendar nudge
+
+- [ ] Final review complete — reopened for the three additions above; first sign-off was "this looks good now"
 
 ## Code Tour and App Map
 
@@ -106,3 +110,4 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Learner asked to build all suggested refinements before review: search/filters, favorite/delete, typed-idea cards, streamed progress, weekly plan + shopping list (`data/plan.json`, `/api/plan`), share card, theme toggle, logo. The weekly plan is a scope addition beyond `scope.md`; kept small and local-only. Verified with `npm run build`, `tsc`, eslint on app code, and curl against the dev server (idea stream returned a valid recipe; plan PUT/GET; favorite PATCH; delete removes the card, its media, and its plan slots).
 - Plan changed from one repeating Mon–Sun week to real calendar dates (`data/plan.json` keyed `YYYY-MM-DD`) after the learner asked for a calendar to plan ahead and look back. Old weekday plans are moved onto the current week automatically. Shopping list removed at the learner's request.
 - Tried a cookbook-style redesign (serif Libre Bodoni, muted palette, square corners, icon set) after the learner called the look "AI slop"; the learner preferred the original orange theme and font, so it was reverted before commit (patch kept outside the repo).
+- Scope addition at final review, agreed with the learner: the build solved "can't relate" and "don't want to rewatch" but not "I save reels, forget, and can't find them". Added share-from-Instagram (iPhone Shortcut + `/?url=`), Remind me (`/api/reminder` `.ics`, Save now lands on the card), and My routine (`data/routine.json`, `/api/routine`, weekly `.ics`). Notifications from DesiTadka itself were not built because they need hosting.

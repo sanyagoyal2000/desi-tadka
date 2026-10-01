@@ -69,7 +69,8 @@ function Editor({ initial }: { initial: Card }) {
       const res = await fetch("/api/cards", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ card }) });
       if (!res.ok) throw new Error((await res.json()).error);
       clearDraft();
-      router.push("/");
+      // Straight to the saved card so a day and reminder get picked while it's fresh.
+      router.push(`/cards/${card.id}?saved=1#remind`);
     } catch (e) {
       setError(e instanceof Error && e.message ? e.message : "Couldn't save.");
       setSaving(false);

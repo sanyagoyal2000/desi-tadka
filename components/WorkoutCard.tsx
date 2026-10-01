@@ -2,15 +2,17 @@
 import type { WorkoutCard as Workout } from "@/lib/schema";
 import CardImage from "./CardImage";
 import SwapButton from "./SwapButton";
+import RoutineButton from "./RoutineButton";
 import { ArrowsClockwise, Barbell } from "@phosphor-icons/react/dist/ssr";
 
 type Props = {
   card: Workout;
   onSwap?: (index: number) => void; // edit mode when provided
   busyIndex?: number | null;
+  canAddToRoutine?: boolean; // saved cards only: lets single exercises go into My routine
 };
 
-export default function WorkoutCard({ card, onSwap, busyIndex }: Props) {
+export default function WorkoutCard({ card, onSwap, busyIndex, canAddToRoutine }: Props) {
   return (
     <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
       <CardImage src={card.exercises[0]?.image ?? ""} alt={card.title} kind="workout" badge={card.exercises.some((e) => e.swapped) ? "Personalized" : undefined} />
@@ -42,6 +44,7 @@ export default function WorkoutCard({ card, onSwap, busyIndex }: Props) {
                 </p>
               </div>
               {onSwap && <SwapButton label={ex.name} onClick={() => onSwap(i)} busy={busyIndex === i} />}
+              {canAddToRoutine && <RoutineButton exercise={ex} cardId={card.id} cardTitle={card.title} />}
             </li>
           ))}
         </ul>

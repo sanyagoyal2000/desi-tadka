@@ -35,6 +35,7 @@ The "oh, that's cool" beat: a Western high-protein recipe reel becomes a card wi
 - Input: Instagram reels (primary). How content is pulled out of a reel is the main technical risk for the spec.
 - Output: a recipe card (Indian-ingredient translation) and a workout card, with the fields listed above.
 - Recipe translation is the star of the demo; the workout card uses the same pipeline.
+- Added at final review (learner's real habit: "I thought I will cook it sometime but then I forget"): share a reel straight from Instagram on iPhone, pick a day + calendar reminder when saving, and collect single exercises into "My routine" with a weekly nudge. Translation stays the star; these make sure a saved card actually gets used.
 
 ## Open for the PRD
 - How vegetarian fits: the learner is vegetarian, but the focus is Indian ingredients for India broadly (e.g. whether diet is a preference).
