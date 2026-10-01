@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Card, Plan } from "@/lib/schema";
 import { addDays, dayLabel, todayISO, weekDates, weekRange, weekStart } from "@/lib/plan";
 import { sortCards } from "@/lib/cardFilters";
+import { Barbell, ForkKnife, X } from "@phosphor-icons/react/dist/ssr";
 
 type DragData = { id: string; from?: { day: string; index: number } };
 
@@ -195,7 +196,12 @@ export default function PlanPage() {
                     >
                       <Thumb card={c} className="size-9" />
                       <Link href={`/cards/${c.id}`} className="min-w-0 flex-1 truncate text-sm font-semibold hover:underline">
-                        <span className={c.kind === "recipe" ? "text-chili" : "text-leaf"}>{c.kind === "recipe" ? "🍛" : "💪"}</span> {c.title}
+                        {c.kind === "recipe" ? (
+                          <ForkKnife aria-label="Recipe" size={14} weight="bold" className="mr-1 inline-block align-[-2px] text-chili" />
+                        ) : (
+                          <Barbell aria-label="Workout" size={14} weight="bold" className="mr-1 inline-block align-[-2px] text-leaf" />
+                        )}
+                        {c.title}
                       </Link>
                       <button
                         type="button"
@@ -203,7 +209,7 @@ export default function PlanPage() {
                         aria-label={`Remove ${c.title} from ${label.long} ${label.date}`}
                         className="grid size-8 shrink-0 place-items-center rounded-full text-ink/40 hover:bg-surface hover:text-chili"
                       >
-                        ×
+                        <X aria-hidden="true" size={16} weight="bold" />
                       </button>
                     </li>
                   );
@@ -227,8 +233,14 @@ export default function PlanPage() {
 function Thumb({ card, className }: { card: Card; className: string }) {
   const image = card.kind === "recipe" ? card.image : card.exercises[0]?.image;
   return (
-    <div className={`${className} shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-turmeric to-chili`}>
-      {image ? <img src={image} alt="" draggable={false} className="size-full object-cover" /> : null}
+    <div className={`${className} grid shrink-0 place-items-center overflow-hidden rounded-xl bg-turmeric-soft text-turmeric`}>
+      {image ? (
+        <img src={image} alt="" draggable={false} className="size-full object-cover" />
+      ) : card.kind === "recipe" ? (
+        <ForkKnife aria-hidden="true" size={18} weight="duotone" />
+      ) : (
+        <Barbell aria-hidden="true" size={18} weight="duotone" />
+      )}
     </div>
   );
 }

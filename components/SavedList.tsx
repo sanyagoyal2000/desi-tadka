@@ -4,15 +4,17 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import type { Card } from "@/lib/schema";
+import { ArrowsClockwise, Barbell, ForkKnife, Star } from "@phosphor-icons/react/dist/ssr";
+import type { Icon } from "@phosphor-icons/react";
 
 const PAGE_SIZE = 4;
 const SWIPE_OPEN = 96; // px the row slides left to reveal Delete
 
 type Kind = Card["kind"];
 
-const SECTIONS: { kind: Kind; title: string; emoji: string; empty: string; accent: string }[] = [
-  { kind: "recipe", title: "Recipes", emoji: "🍛", empty: "No recipes yet. Share a recipe reel or idea above.", accent: "text-chili" },
-  { kind: "workout", title: "Workouts", emoji: "💪", empty: "No workouts yet. Share a workout reel or idea above.", accent: "text-leaf" },
+const SECTIONS: { kind: Kind; title: string; Icon: Icon; empty: string; accent: string }[] = [
+  { kind: "recipe", title: "Recipes", Icon: ForkKnife, empty: "No recipes yet. Share a recipe reel or idea above.", accent: "text-chili" },
+  { kind: "workout", title: "Workouts", Icon: Barbell, empty: "No workouts yet. Share a workout reel or idea above.", accent: "text-leaf" },
 ];
 
 type Actions = { onToggleFavorite: (c: Card) => void; onDelete: (c: Card) => void };
@@ -29,7 +31,7 @@ export default function SavedList({ cards, filtering, ...actions }: { cards: Car
 
 function Section({
   title,
-  emoji,
+  Icon: SectionIcon,
   empty,
   accent,
   cards,
@@ -45,8 +47,8 @@ function Section({
   return (
     <section aria-labelledby={headingId}>
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 id={headingId} className="font-display text-2xl font-extrabold">
-          <span aria-hidden="true">{emoji}</span> {title}
+        <h2 id={headingId} className="flex items-center gap-2 font-display text-2xl font-extrabold">
+          <SectionIcon aria-hidden="true" size={24} weight="duotone" className={accent} /> {title}
         </h2>
         {cards && cards.length > 0 && <span className={`rounded-full bg-surface px-2.5 py-0.5 text-xs font-bold ${accent}`}>{cards.length}</span>}
       </div>
@@ -70,7 +72,7 @@ function Section({
             ))}
           </ul>
           {current === 0 && cards.length > 0 && !filtering && (
-            <p className="mt-2 text-center text-[11px] text-ink/40">Swipe a card left to delete · ★ to pin it to the top</p>
+            <p className="mt-2 text-center text-[11px] text-ink/40">Swipe a card left to delete · tap the star to pin it to the top</p>
           )}
           {pageCount > 1 && <Pager title={title} page={current} pageCount={pageCount} onChange={setPage} />}
         </>
@@ -141,14 +143,18 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
           }}
           className="flex min-w-0 flex-1 items-center gap-3 rounded-3xl p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turmeric"
         >
-          <div className="size-20 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-turmeric to-chili">
-            {image ? <img src={image} alt="" draggable={false} className="size-full object-cover" /> : <div className="grid size-full place-items-center text-3xl">🌶️</div>}
+          <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-turmeric-soft text-turmeric">
+            {image ? <img src={image} alt="" draggable={false} className="size-full object-cover" /> : c.kind === "recipe" ? <ForkKnife aria-hidden="true" size={32} weight="duotone" /> : <Barbell aria-hidden="true" size={32} weight="duotone" />}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate font-display text-lg font-bold leading-tight">{c.title}</p>
             <p className="text-xs text-ink/60">
               {c.kind === "recipe" ? `${c.proteinGrams}g protein · ${c.calories} cal` : `${c.exercises.length} exercises · ${c.rounds} rounds`}
-              {swaps > 0 && <span className="ml-1 font-semibold text-turmeric">· ↺ {swaps}</span>}
+              {swaps > 0 && (
+                <span className="ml-1 inline-flex items-center gap-0.5 font-semibold text-turmeric">
+                  · <ArrowsClockwise aria-label="swaps" size={12} weight="bold" /> {swaps}
+                </span>
+              )}
             </p>
           </div>
         </Link>
@@ -157,11 +163,11 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
           aria-pressed={Boolean(c.favorite)}
           aria-label={c.favorite ? `Unpin ${c.title}` : `Pin ${c.title} to the top`}
           onClick={() => onToggleFavorite(c)}
-          className={`mr-2 grid size-11 shrink-0 place-items-center rounded-full text-2xl transition hover:bg-cream focus-visible:outline-2 focus-visible:outline-turmeric ${
+          className={`mr-2 grid size-11 shrink-0 place-items-center rounded-full transition hover:bg-cream focus-visible:outline-2 focus-visible:outline-turmeric ${
             c.favorite ? "text-turmeric" : "text-ink/25"
           }`}
         >
-          {c.favorite ? "★" : "☆"}
+          <Star aria-hidden="true" size={24} weight={c.favorite ? "fill" : "regular"} />
         </button>
       </div>
     </div>

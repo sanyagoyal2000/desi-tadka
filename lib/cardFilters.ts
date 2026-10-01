@@ -3,9 +3,9 @@ import type { Card, RecipeCard } from "./schema";
 export type Filter = "protein" | "veg" | "quick";
 
 export const FILTERS: { id: Filter; label: string }[] = [
-  { id: "protein", label: "💪 High protein" },
-  { id: "veg", label: "🥬 Vegetarian" },
-  { id: "quick", label: "⏱ Under 20 min" },
+  { id: "protein", label: "High protein" },
+  { id: "veg", label: "Vegetarian" },
+  { id: "quick", label: "Under 20 min" },
 ];
 
 const HIGH_PROTEIN_GRAMS = 25;

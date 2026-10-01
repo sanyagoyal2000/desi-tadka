@@ -1,6 +1,7 @@
 import type { RecipeCard as Recipe } from "@/lib/schema";
 import CardImage from "./CardImage";
 import SwapButton from "./SwapButton";
+import { ArrowsClockwise } from "@phosphor-icons/react/dist/ssr";
 
 type Props = {
   card: Recipe;
@@ -12,7 +13,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
   const anySwapped = card.ingredients.some((i) => i.swapped);
   return (
     <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
-      <CardImage src={card.image} alt={card.title} badge={anySwapped && !card.imageIsGenerated ? "swapped" : undefined} />
+      <CardImage src={card.image} alt={card.title} kind="recipe" badge={anySwapped && !card.imageIsGenerated ? "swapped" : undefined} />
       <div className="p-5">
         <span className="text-xs font-bold uppercase tracking-widest text-chili">Recipe</span>
         <h2 className="font-display text-3xl font-extrabold leading-tight">{card.title}</h2>
@@ -33,7 +34,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
             >
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">
-                  {ing.swapped && <span className="mr-1 text-turmeric">↺</span>}
+                  {ing.swapped && <ArrowsClockwise aria-label="Changed" size={15} weight="bold" className="mr-1 inline-block align-[-2px] text-turmeric" />}
                   {ing.name}
                 </p>
                 <p className="text-sm text-ink/60">
@@ -45,7 +46,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
             </li>
           ))}
         </ul>
-        {card.ingredients.some((i) => i.quantity.trim().startsWith("~")) && <p className="mt-2 text-xs text-ink/60">~ estimated amount — the reel didn&apos;t say. Tap ↺ to change it.</p>}
+        {card.ingredients.some((i) => i.quantity.trim().startsWith("~")) && <p className="mt-2 text-xs text-ink/60">~ estimated amount — the reel didn&apos;t say. Tap the swap button to change it.</p>}
 
         <h3 className="mt-5 font-display text-xl font-bold">
           Steps <span className="text-base font-semibold text-ink/50">· {card.steps.length}</span>

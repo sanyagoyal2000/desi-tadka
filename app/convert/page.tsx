@@ -7,6 +7,7 @@ import { MAX_WORKOUT_SWAPS, type Card } from "@/lib/schema";
 import RecipeCard from "@/components/RecipeCard";
 import WorkoutCard from "@/components/WorkoutCard";
 import SwapSheet from "@/components/SwapSheet";
+import { Barbell, Fire, Leaf } from "@phosphor-icons/react/dist/ssr";
 
 export default function ConvertPage() {
   const router = useRouter();
@@ -88,15 +89,23 @@ function Editor({ initial }: { initial: Card }) {
       <section className="rounded-3xl bg-chili p-4 text-white">
         {card.kind === "recipe" ? (
           <>
-            <p className="font-display text-xl font-bold">Add some tadka? 🌶️</p>
-            <p className="text-sm text-white/85">Tap ↺ on any ingredient for a desi swap, or convert the whole thing.</p>
+            <p className="flex items-center gap-2 font-display text-xl font-bold">
+              <Fire aria-hidden="true" size={22} weight="fill" /> Add some tadka?
+            </p>
+            <p className="text-sm text-white/85">Tap the swap button on any ingredient for a desi swap or a new amount, or convert the whole thing.</p>
             <button
               type="button"
               disabled={busy !== null}
               onClick={() => apply({ action: "vegetarian" }, "veg")}
-              className="mt-3 w-full rounded-2xl bg-white py-3 font-display text-lg font-bold text-chili disabled:opacity-60"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-3 font-display text-lg font-bold text-chili disabled:opacity-60"
             >
-              {busy === "veg" ? "Adding tadka…" : "🥬 Make it vegetarian"}
+              {busy === "veg" ? (
+                "Adding tadka…"
+              ) : (
+                <>
+                  <Leaf aria-hidden="true" size={20} weight="bold" /> Make it vegetarian
+                </>
+              )}
             </button>
           </>
         ) : (
@@ -165,8 +174,10 @@ function Editor({ initial }: { initial: Card }) {
 function WorkoutPrompt({ swapCount }: { swapCount: number }) {
   return (
     <>
-      <p className="font-display text-xl font-bold">Want to change anything? 💪</p>
-      <p className="text-sm text-white/85">Tap ↺ to swap an exercise, and tell me what to focus on. {MAX_WORKOUT_SWAPS - swapCount} of {MAX_WORKOUT_SWAPS} swaps left.</p>
+      <p className="flex items-center gap-2 font-display text-xl font-bold">
+        <Barbell aria-hidden="true" size={22} weight="fill" /> Want to change anything?
+      </p>
+      <p className="text-sm text-white/85">Tap the swap button to swap an exercise, and tell me what to focus on. {MAX_WORKOUT_SWAPS - swapCount} of {MAX_WORKOUT_SWAPS} swaps left.</p>
     </>
   );
 }

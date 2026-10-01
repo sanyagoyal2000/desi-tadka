@@ -4,6 +4,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
+import { CalendarBlank } from "@phosphor-icons/react/dist/ssr";
 
 const baloo = Baloo_2({ variable: "--font-baloo", subsets: ["latin"], weight: ["600", "700", "800"] });
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -39,9 +40,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <nav className="flex shrink-0 items-center gap-2">
               <Link
                 href="/plan"
-                className="grid h-10 place-items-center rounded-full bg-surface px-3 text-sm font-bold text-chili shadow-[0_2px_8px_rgba(42,26,16,0.08)] focus-visible:outline-2 focus-visible:outline-turmeric"
+                className="flex h-10 items-center gap-1.5 rounded-full bg-surface px-3 text-sm font-bold text-chili shadow-[0_2px_8px_rgba(42,26,16,0.08)] focus-visible:outline-2 focus-visible:outline-turmeric"
               >
-                📅 Plan
+                <CalendarBlank aria-hidden="true" size={18} weight="bold" />
+                Plan
               </Link>
               <ThemeToggle />
             </nav>

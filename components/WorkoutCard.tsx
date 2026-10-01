@@ -2,6 +2,7 @@
 import type { WorkoutCard as Workout } from "@/lib/schema";
 import CardImage from "./CardImage";
 import SwapButton from "./SwapButton";
+import { ArrowsClockwise, Barbell } from "@phosphor-icons/react/dist/ssr";
 
 type Props = {
   card: Workout;
@@ -12,7 +13,7 @@ type Props = {
 export default function WorkoutCard({ card, onSwap, busyIndex }: Props) {
   return (
     <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
-      <CardImage src={card.exercises[0]?.image ?? ""} alt={card.title} />
+      <CardImage src={card.exercises[0]?.image ?? ""} alt={card.title} kind="workout" />
       <div className="p-5">
         <span className="text-xs font-bold uppercase tracking-widest text-chili">Workout</span>
         <h2 className="font-display text-3xl font-extrabold leading-tight">{card.title}</h2>
@@ -26,13 +27,13 @@ export default function WorkoutCard({ card, onSwap, busyIndex }: Props) {
         <ul className="mt-2 flex flex-col gap-2">
           {card.exercises.map((ex, i) => (
             <li key={i} className={`flex items-center gap-3 rounded-2xl p-2 ${ex.swapped ? "bg-turmeric-soft ring-2 ring-turmeric" : "bg-cream"}`}>
-              <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-turmeric to-chili">
-                {ex.image ? <img src={ex.image} alt={ex.name} className="size-full object-cover" /> : null}
+              <div className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl bg-turmeric-soft text-turmeric">
+                {ex.image ? <img src={ex.image} alt={ex.name} className="size-full object-cover" /> : <Barbell aria-hidden="true" size={28} weight="duotone" />}
                 {ex.swapped && <span className="absolute inset-x-0 bottom-0 bg-turmeric text-center text-[10px] font-bold uppercase text-white">swapped</span>}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">
-                  {ex.swapped && <span className="mr-1 text-turmeric">↺</span>}
+                  {ex.swapped && <ArrowsClockwise aria-label="Swapped" size={15} weight="bold" className="mr-1 inline-block align-[-2px] text-turmeric" />}
                   {ex.name}
                 </p>
                 <p className="text-sm text-ink/60">

@@ -8,6 +8,9 @@ import type { Card } from "@/lib/schema";
 import { clearDraft, saveDraft } from "@/lib/draft";
 import { streamExtract, type ExtractStep } from "@/lib/progress";
 import { FILTERS, matches, sortCards, type Filter } from "@/lib/cardFilters";
+import { Barbell, Leaf, MagnifyingGlass, Timer } from "@phosphor-icons/react/dist/ssr";
+
+const FILTER_ICONS = { protein: Barbell, veg: Leaf, quick: Timer } as const;
 
 export default function Home() {
   const router = useRouter();
@@ -106,14 +109,17 @@ export default function Home() {
           <label htmlFor="search" className="sr-only">
             Search your cards
           </label>
+          <div className="relative">
+          <MagnifyingGlass aria-hidden="true" size={18} weight="bold" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" />
           <input
             id="search"
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="🔍 Search by name, ingredient or exercise"
-            className="w-full rounded-2xl border-2 border-transparent bg-surface px-4 py-3 text-base shadow-[0_2px_8px_rgba(42,26,16,0.06)] outline-none focus:border-turmeric"
+            placeholder="Search by name, ingredient or exercise"
+            className="w-full rounded-2xl border-2 border-transparent bg-surface py-3 pl-11 pr-4 text-base shadow-[0_2px_8px_rgba(42,26,16,0.06)] outline-none focus:border-turmeric"
           />
+          </div>
           <div role="group" aria-label="Recipe filters" className="flex flex-wrap gap-2">
             {FILTERS.map((f) => {
               const on = filters.has(f.id);
@@ -123,10 +129,14 @@ export default function Home() {
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggleFilter(f.id)}
-                  className={`rounded-full px-3 py-1.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
                     on ? "bg-chili text-white" : "bg-surface text-ink/70 hover:text-ink"
                   }`}
                 >
+                  {(() => {
+                    const Icon = FILTER_ICONS[f.id];
+                    return <Icon aria-hidden="true" size={16} weight="bold" />;
+                  })()}
                   {f.label}
                 </button>
               );

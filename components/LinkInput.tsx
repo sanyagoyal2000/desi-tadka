@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { isValidReelLink } from "@/lib/validateLink";
 import { STEP_LABELS, type ExtractStep } from "@/lib/progress";
+import { Check, FilmStrip, PencilSimpleLine } from "@phosphor-icons/react/dist/ssr";
 
 type Props = {
   busy: boolean;
@@ -33,10 +34,11 @@ export default function LinkInput({ busy, step, mode, onSubmitLink, onSubmitIdea
             role="tab"
             aria-selected={source === s.id}
             onClick={() => setSource(s.id)}
-            className={`rounded-xl py-2 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
+            className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
               source === s.id ? "bg-chili text-white shadow" : "text-ink/60 hover:text-ink"
             }`}
           >
+            <s.Icon aria-hidden="true" size={18} weight="bold" />
             {s.label}
           </button>
         ))}
@@ -111,13 +113,13 @@ export default function LinkInput({ busy, step, mode, onSubmitLink, onSubmitIdea
 }
 
 const SOURCES = [
-  { id: "reel", label: "🎬 Reel link" },
-  { id: "idea", label: "✍️ Type an idea" },
+  { id: "reel", label: "Reel link", Icon: FilmStrip },
+  { id: "idea", label: "Type an idea", Icon: PencilSimpleLine },
 ] as const;
 
 const ORDER: ExtractStep[] = ["read", "write", "plate"];
 
-// Live steps from /api/extract: done ✓, current pulsing, upcoming dimmed.
+// Live steps from /api/extract: done (check), current pulsing, upcoming dimmed.
 function Progress({ step, mode }: { step: ExtractStep | null; mode: "reel" | "idea" }) {
   const current = step ? ORDER.indexOf(step) : 0;
   return (
@@ -133,7 +135,7 @@ function Progress({ step, mode }: { step: ExtractStep | null; mode: "reel" | "id
                 state === "done" ? "bg-turmeric-soft text-turmeric" : state === "active" ? "animate-pulse bg-chili text-white" : "bg-cream text-ink/40"
               }`}
             >
-              {state === "done" && <span aria-hidden="true">✓</span>}
+              {state === "done" && <Check aria-hidden="true" size={12} weight="bold" />}
               {STEP_LABELS[mode][s]}
             </span>
           </li>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Card, Plan } from "@/lib/schema";
 import { addDays, dayLabel, todayISO } from "@/lib/plan";
 import { shareImage, shareText } from "@/lib/shareCard";
+import { CalendarBlank, Copy, ImageSquare, ShareNetwork, Star } from "@phosphor-icons/react/dist/ssr";
 
 const pill =
   "flex items-center justify-center gap-1.5 rounded-2xl px-3 py-3 text-sm font-bold shadow-[0_2px_8px_rgba(42,26,16,0.06)] transition hover:shadow-[0_4px_16px_rgba(42,26,16,0.12)] focus-visible:outline-2 focus-visible:outline-turmeric disabled:opacity-50";
@@ -104,16 +105,20 @@ export default function CardActions({ card: initial }: { card: Card }) {
     <section className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-2">
         <button type="button" onClick={share} disabled={sharing} className={`${pill} col-span-3 bg-leaf text-base text-white`}>
-          {sharing ? "Getting it ready…" : "📤 Share card"}
+          {sharing ? "Getting it ready…" : (
+            <>
+              <ShareNetwork aria-hidden="true" size={18} weight="bold" /> Share card
+            </>
+          )}
         </button>
         <button type="button" onClick={saveImage} className={`${pill} bg-surface`}>
-          🖼 Image
+          <ImageSquare aria-hidden="true" size={18} weight="bold" /> Image
         </button>
         <button type="button" onClick={copyText} className={`${pill} bg-surface`}>
-          📋 Copy
+          <Copy aria-hidden="true" size={18} weight="bold" /> Copy
         </button>
         <button type="button" onClick={toggleFavorite} aria-pressed={Boolean(card.favorite)} className={`${pill} bg-surface ${card.favorite ? "text-turmeric" : ""}`}>
-          {card.favorite ? "★ Pinned" : "☆ Pin"}
+          <Star aria-hidden="true" size={18} weight={card.favorite ? "fill" : "bold"} /> {card.favorite ? "Pinned" : "Pin"}
         </button>
       </div>
       {note && (
@@ -123,7 +128,9 @@ export default function CardActions({ card: initial }: { card: Card }) {
       )}
 
       <div className="rounded-3xl bg-surface p-4 shadow-[0_2px_8px_rgba(42,26,16,0.06)]">
-        <p className="font-display text-lg font-bold">📅 Add to my plan</p>
+        <p className="flex items-center gap-2 font-display text-lg font-bold">
+          <CalendarBlank aria-hidden="true" size={20} weight="bold" className="text-chili" /> Add to my plan
+        </p>
         <p className="text-xs text-ink/50">Next 7 days — older and later dates are on the Plan page.</p>
         <div role="group" aria-label="Days" className="mt-2 grid grid-cols-7 gap-1.5">
           {upcoming.map((d, i) => {
