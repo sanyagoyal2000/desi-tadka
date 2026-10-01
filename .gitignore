@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.server.example
 
 # dependencies
 /node_modules
@@ -22,3 +23,4 @@ npm-debug.log*
 /data/
 /public/media/
 /tmp/
+/secrets/

@@ -1,0 +1,15 @@
+node_modules
+.next
+data
+tmp
+.git
+.env
+.env.*
+!.env.example
+!.env.server.example
+devpost/learner-profile.md
+.claude
+.agents
+agent
+secrets
+*.tsbuildinfo

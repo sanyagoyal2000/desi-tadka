@@ -1,0 +1,29 @@
+# On the server: `docker compose up -d --build`. Settings come from .env (see .env.server.example).
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./tmp:/app/tmp
+      - ./secrets:/app/secrets:ro
+
+  # Caddy gets a free HTTPS certificate for SITE_ADDRESS and forwards to the app.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [app]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

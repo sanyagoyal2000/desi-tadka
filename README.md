@@ -34,6 +34,10 @@ In Instagram: tap **Share** (paper plane) on a reel → **Share to…** / **More
 - **Remind me** (on a saved card): pick a day and time → it goes on your Plan and opens a calendar event (`/api/reminder`, an `.ics` file). On iPhone, Safari shows **Add to Calendar**; the phone's own alert is the nudge.
 - **My routine**: on a saved workout, tap **+ Routine** on any single exercise. They collect on Home under *My routine* (`data/routine.json`), with a **weekly nudge** (pick days + time) that repeats in your calendar.
 
+## Put it online (Oracle Cloud, free)
+
+See [DEPLOY.md](DEPLOY.md): Docker + HTTPS + an access code, so your iPhone can use DesiTadka without the laptop.
+
 ## How it works
 
 1. `lib/reel.ts` downloads the reel with yt-dlp, reads the caption, and grabs 5 frames with ffmpeg.
