@@ -11,7 +11,7 @@ type Props = {
 
 export default function WorkoutCard({ card, onSwap, busyIndex }: Props) {
   return (
-    <article className="overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
+    <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
       <CardImage src={card.exercises[0]?.image ?? ""} alt={card.title} />
       <div className="p-5">
         <span className="text-xs font-bold uppercase tracking-widest text-chili">Workout</span>

@@ -11,7 +11,7 @@ type Props = {
 export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
   const anySwapped = card.ingredients.some((i) => i.swapped);
   return (
-    <article className="overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
+    <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
       <CardImage src={card.image} alt={card.title} badge={anySwapped && !card.imageIsGenerated ? "swapped" : undefined} />
       <div className="p-5">
         <span className="text-xs font-bold uppercase tracking-widest text-chili">Recipe</span>

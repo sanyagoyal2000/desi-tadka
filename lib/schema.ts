@@ -22,6 +22,7 @@ export const RecipeCardSchema = z.object({
   ingredients: z.array(IngredientSchema),
   steps: z.array(z.string()),
   savedAt: z.string().optional(),
+  favorite: z.boolean().optional(),
 });
 
 export const ExerciseSchema = z.object({
@@ -42,6 +43,7 @@ export const WorkoutCardSchema = z.object({
   exercises: z.array(ExerciseSchema),
   swapCount: z.number().max(3),
   savedAt: z.string().optional(),
+  favorite: z.boolean().optional(),
 });
 
 export const CardSchema = z.discriminatedUnion("kind", [RecipeCardSchema, WorkoutCardSchema]);
@@ -53,6 +55,16 @@ export type WorkoutCard = z.infer<typeof WorkoutCardSchema>;
 export type Card = z.infer<typeof CardSchema>;
 
 export const MAX_WORKOUT_SWAPS = 3;
+
+// ---- Weekly plan: card ids per day (data/plan.json) ----
+
+export const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+export type Day = (typeof DAYS)[number];
+export const PlanSchema = z.object({
+  days: z.object(Object.fromEntries(DAYS.map((d) => [d, z.array(z.string())])) as Record<Day, z.ZodArray<z.ZodString>>),
+});
+export type Plan = z.infer<typeof PlanSchema>;
+export const emptyPlan = (): Plan => ({ days: Object.fromEntries(DAYS.map((d) => [d, []])) as unknown as Plan["days"] });
 
 // ---- Shapes the AI must return. Kept flat and fully "required" so both the
 // OpenAI API (strict JSON schema) and `codex exec --output-schema` accept them. ----

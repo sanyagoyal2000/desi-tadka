@@ -93,7 +93,7 @@ function Editor({ initial }: { initial: Card }) {
         )}
       </section>
 
-      {error && <p className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-chili">{error}</p>}
+      {error && <p className="rounded-2xl bg-surface px-4 py-3 text-sm font-semibold text-chili">{error}</p>}
       {typeof busy === "number" && <p className="animate-pulse text-center text-sm font-semibold text-turmeric">Adding tadka… rewriting the {card.kind}</p>}
 
       {card.kind === "recipe" ? (
@@ -109,7 +109,7 @@ function Editor({ initial }: { initial: Card }) {
             clearDraft();
             router.push("/");
           }}
-          className="rounded-2xl bg-white px-5 py-4 font-semibold text-ink/70 shadow-lg"
+          className="rounded-2xl bg-surface px-5 py-4 font-semibold text-ink/70 shadow-lg"
         >
           Discard
         </button>
@@ -119,7 +119,7 @@ function Editor({ initial }: { initial: Card }) {
           onClick={save}
           className="flex-1 rounded-2xl bg-leaf py-4 font-display text-xl font-bold text-white shadow-lg disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save to my cards"}
+          {saving ? "Saving…" : "Save card"}
         </button>
       </div>
 

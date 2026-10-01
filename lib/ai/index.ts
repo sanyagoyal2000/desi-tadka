@@ -17,7 +17,7 @@ import {
 } from "../schema";
 import { codexProvider } from "./codexCli";
 import { openaiProvider } from "./openaiApi";
-import { extractionPrompt, rewritePrompt, suggestPrompt } from "./prompts";
+import { extractionPrompt, ideaPrompt, rewritePrompt, suggestPrompt } from "./prompts";
 import type { AIProvider } from "./types";
 
 export class AIConfigError extends Error {}
@@ -59,10 +59,24 @@ async function ask<T>(schema: z.ZodType<T>, prompt: string, images: string[] = [
   throw new AIResponseError(String(lastError));
 }
 
-export async function extractCard(
-  input: { id: string; sourceUrl: string; caption: string; frameFiles: string[]; frameUrls: string[] },
-): Promise<{ kind: "other" } | { kind: "recipe"; card: RecipeCard } | { kind: "workout"; card: WorkoutCard }> {
+type Extracted = { kind: "other" } | { kind: "recipe"; card: RecipeCard } | { kind: "workout"; card: WorkoutCard };
+
+export async function extractCard(input: { id: string; sourceUrl: string; caption: string; frameFiles: string[]; frameUrls: string[] }): Promise<Extracted> {
   const x: Extraction = await ask(ExtractionSchema, extractionPrompt(input.caption, input.frameFiles.length), input.frameFiles);
+  return toCard(x, input);
+}
+
+// Typed idea → original card. No reel frames, so recipes get a drawn picture in API mode.
+export async function ideaToCard(id: string, idea: string): Promise<Extracted> {
+  const x: Extraction = await ask(ExtractionSchema, ideaPrompt(idea));
+  return toCard(x, { id, sourceUrl: "", frameUrls: [] });
+}
+
+export async function pictureFor(card: RecipeCard): Promise<RecipeCard> {
+  return withNewPicture(card);
+}
+
+function toCard(x: Extraction, input: { id: string; sourceUrl: string; frameUrls: string[] }): Extracted {
   const frame = (n: number) => input.frameUrls[n - 1] ?? input.frameUrls[0] ?? "";
   const base = { id: input.id, sourceUrl: input.sourceUrl, title: x.title };
 

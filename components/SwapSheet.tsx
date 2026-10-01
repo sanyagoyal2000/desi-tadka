@@ -56,8 +56,8 @@ export default function SwapSheet({ card, item, onApply, onClose }: Props) {
   }, [item]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40" onClick={onClose}>
-      <div className="w-full max-w-md rounded-t-3xl bg-white p-5 pb-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" onClick={onClose}>
+      <div className="w-full max-w-md rounded-t-3xl bg-surface p-5 pb-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-ink/15" />
         <p className="text-sm font-medium text-ink/60">Swap</p>
         <h3 className="font-display text-2xl font-extrabold">{item}</h3>

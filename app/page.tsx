@@ -6,15 +6,21 @@ import LinkInput from "@/components/LinkInput";
 import SavedList from "@/components/SavedList";
 import type { Card } from "@/lib/schema";
 import { clearDraft, saveDraft } from "@/lib/draft";
+import { streamExtract, type ExtractStep } from "@/lib/progress";
+import { FILTERS, matches, sortCards, type Filter } from "@/lib/cardFilters";
 
 export default function Home() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [step, setStep] = useState<ExtractStep | null>(null);
+  const [mode, setMode] = useState<"reel" | "idea">("reel");
   const [error, setError] = useState<string | null>(null);
   const [showCaptionFallback, setShowCaptionFallback] = useState(false);
 
   const [configured, setConfigured] = useState(true);
   const [cards, setCards] = useState<Card[] | null>(null);
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<Set<Filter>>(new Set());
 
   useEffect(() => {
     clearDraft();
@@ -28,25 +34,56 @@ export default function Home() {
       .catch(() => setCards([]));
   }, []);
 
-  async function extract(payload: { url?: string; caption?: string }) {
+  async function extract(payload: { url?: string; caption?: string; idea?: string }) {
     setBusy(true);
+    setStep(null);
+    setMode(payload.idea ? "idea" : "reel");
     setError(null);
     try {
-      const res = await fetch("/api/extract", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong");
-        if (data.inaccessible) setShowCaptionFallback(true);
+      const result = await streamExtract(payload, setStep);
+      if (result.type === "error") {
+        setError(result.error);
+        if (result.inaccessible) setShowCaptionFallback(true);
         return;
       }
-      saveDraft(data);
-      router.push("/convert");
+      if (result.type === "done") {
+        saveDraft(result.data);
+        router.push("/convert");
+      }
     } catch {
       setError("Couldn't reach DesiTadka. Is the dev server running?");
     } finally {
       setBusy(false);
     }
   }
+
+  async function toggleFavorite(card: Card) {
+    const favorite = !card.favorite;
+    setCards((cs) => cs?.map((c) => (c.id === card.id ? { ...c, favorite } : c)) ?? cs);
+    const res = await fetch(`/api/cards/${card.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ favorite }) }).catch(() => null);
+    if (!res?.ok) setCards((cs) => cs?.map((c) => (c.id === card.id ? { ...c, favorite: !favorite } : c)) ?? cs);
+  }
+
+  async function remove(card: Card) {
+    const before = cards;
+    setCards((cs) => cs?.filter((c) => c.id !== card.id) ?? cs);
+    const res = await fetch(`/api/cards/${card.id}`, { method: "DELETE" }).catch(() => null);
+    if (!res?.ok) {
+      setCards(before);
+      setError(`Couldn't delete "${card.title}".`);
+    }
+  }
+
+  function toggleFilter(f: Filter) {
+    setFilters((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(f)) next.add(f);
+      return next;
+    });
+  }
+
+  const filtering = query.trim() !== "" || filters.size > 0;
+  const visible = cards && sortCards(cards.filter((c) => matches(c, query, filters)));
 
   return (
     <main className="flex flex-col gap-6">
@@ -55,15 +92,56 @@ export default function Home() {
       )}
       <LinkInput
         busy={busy}
+        step={step}
+        mode={mode}
         error={error}
         showCaptionFallback={showCaptionFallback}
         onSubmitLink={(url) => extract({ url })}
+        onSubmitIdea={(idea) => extract({ idea })}
         onSubmitCaption={(caption) => extract({ caption })}
       />
-      <section>
-        <h2 className="mb-3 font-display text-2xl font-extrabold">My cards</h2>
-        <SavedList cards={cards} />
-      </section>
+
+      {cards && cards.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <label htmlFor="search" className="sr-only">
+            Search your cards
+          </label>
+          <input
+            id="search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="🔍 Search by name, ingredient or exercise"
+            className="w-full rounded-2xl border-2 border-transparent bg-surface px-4 py-3 text-base shadow-[0_2px_8px_rgba(42,26,16,0.06)] outline-none focus:border-turmeric"
+          />
+          <div role="group" aria-label="Recipe filters" className="flex flex-wrap gap-2">
+            {FILTERS.map((f) => {
+              const on = filters.has(f.id);
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => toggleFilter(f.id)}
+                  className={`rounded-full px-3 py-1.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
+                    on ? "bg-chili text-white" : "bg-surface text-ink/70 hover:text-ink"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <SavedList
+        key={`${query}|${[...filters].join()}`}
+        cards={visible}
+        filtering={filtering}
+        onToggleFavorite={toggleFavorite}
+        onDelete={remove}
+      />
     </main>
   );
 }

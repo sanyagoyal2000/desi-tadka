@@ -1,17 +1,48 @@
 @import "tailwindcss";
 
+/* `dark:` follows the resolved theme the inline script in layout.tsx puts on <html>. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Theme-dependent colours are plain vars so dark mode can swap them. */
+:root {
+  --cream: #fdf6ee;
+  --ink: #2a1a10;
+  --surface: #ffffff;
+  --turmeric-soft: #fff1d6;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --cream: #1a120c;
+    --ink: #f6ebe0;
+    --surface: #2a1d14;
+    --turmeric-soft: #3d2a10;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --cream: #1a120c;
+  --ink: #f6ebe0;
+  --surface: #2a1d14;
+  --turmeric-soft: #3d2a10;
+  color-scheme: dark;
+}
+
 @theme inline {
   --color-chili: #d9480f;
   --color-turmeric: #f08c00;
-  --color-turmeric-soft: #fff1d6;
-  --color-cream: #fdf6ee;
-  --color-ink: #2a1a10;
+  --color-turmeric-soft: var(--turmeric-soft);
+  --color-cream: var(--cream);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
   --color-leaf: #2b8a3e;
   --font-display: var(--font-baloo);
   --font-sans: var(--font-inter);
 }
 
 body {
-  background: var(--color-cream);
-  color: var(--color-ink);
+  background: var(--cream);
+  color: var(--ink);
 }

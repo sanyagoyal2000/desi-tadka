@@ -22,6 +22,22 @@ heroFrame: the 1-based frame that best shows the finished dish or workout (0 if 
 Respond only with JSON matching the schema.`;
 }
 
+// A typed idea (no reel): invent an original card that already fits Indian kitchens.
+export function ideaPrompt(idea: string): string {
+  return `${AUDIENCE}
+
+The user typed this idea:
+"""
+${idea}
+"""
+
+Decide whether they want a "recipe" or a "workout" ("other" only if it is clearly neither), then create one original, practical version of it.
+If recipe: title, prepTimeMinutes, ingredients with quantities, clear steps (no numbers in the text), and your best estimate of proteinGrams and calories PER SERVING. Leave frequency "", rounds 0, exercises [].
+If workout: title, frequency (e.g. "3x a week"), rounds, and 4-8 exercises with reps (e.g. "12 reps", "30 sec"); set each exercise frame to 0. Leave ingredients [], steps [], numbers 0.
+heroFrame: 0.
+Respond only with JSON matching the schema.`;
+}
+
 export function suggestPrompt(card: Card, item: string, hint?: string): string {
   if (card.kind === "recipe") {
     return `${AUDIENCE}

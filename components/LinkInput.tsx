@@ -2,37 +2,47 @@
 
 import { useState } from "react";
 import { isValidReelLink } from "@/lib/validateLink";
+import { STEP_LABELS, type ExtractStep } from "@/lib/progress";
+
+const looksLikeLink = (s: string) => /^https?:\/\/|instagram\.com/i.test(s.trim());
 
 type Props = {
   busy: boolean;
+  step: ExtractStep | null;
+  mode: "reel" | "idea";
   onSubmitLink: (url: string) => void;
+  onSubmitIdea: (idea: string) => void;
   onSubmitCaption: (caption: string) => void;
   error: string | null;
   showCaptionFallback: boolean;
 };
 
-export default function LinkInput({ busy, onSubmitLink, onSubmitCaption, error, showCaptionFallback }: Props) {
+export default function LinkInput({ busy, step, mode, onSubmitLink, onSubmitIdea, onSubmitCaption, error, showCaptionFallback }: Props) {
   const [link, setLink] = useState("");
   const [caption, setCaption] = useState("");
-  const wrongLink = link.trim() !== "" && !isValidReelLink(link);
+  const isLink = looksLikeLink(link);
+  const wrongLink = isLink && !isValidReelLink(link);
 
   return (
-    <div className="rounded-3xl bg-white p-4 shadow-[0_8px_30px_rgba(42,26,16,0.08)]">
+    <div className="rounded-3xl bg-surface p-4 shadow-[0_8px_30px_rgba(42,26,16,0.08)]">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (!wrongLink && link.trim()) onSubmitLink(link.trim());
+          if (wrongLink || !link.trim()) return;
+          if (isLink) onSubmitLink(link.trim());
+          else onSubmitIdea(link.trim());
         }}
       >
         <label htmlFor="reel" className="font-display text-lg font-bold">
-          Paste an Instagram reel
+          Share your ideas
         </label>
+        <p className="text-sm text-ink/60">Paste an Instagram reel link, or just type what you&apos;re craving — we&apos;ll give it some desi tadka.</p>
         <div className="mt-2 flex gap-2">
           <input
             id="reel"
-            inputMode="url"
             autoComplete="off"
-            placeholder="https://www.instagram.com/reel/…"
+            enterKeyHint="go"
+            placeholder="Reel link or “paneer breakfast”"
             value={link}
             onChange={(e) => setLink(e.target.value)}
             className={`min-w-0 flex-1 rounded-2xl border-2 bg-cream px-4 py-3 text-base outline-none focus:border-turmeric ${wrongLink ? "border-chili" : "border-transparent"}`}
@@ -45,9 +55,9 @@ export default function LinkInput({ busy, onSubmitLink, onSubmitCaption, error, 
             {busy ? "…" : "Go"}
           </button>
         </div>
-        {wrongLink && <p className="mt-2 text-sm font-semibold text-chili">Wrong link</p>}
+        {wrongLink && <p className="mt-2 text-sm font-semibold text-chili">That isn&apos;t an Instagram reel link.</p>}
         {error && !wrongLink && <p className="mt-2 text-sm font-semibold text-chili">{error}</p>}
-        {busy && <p className="mt-2 animate-pulse text-sm font-semibold text-turmeric">Adding tadka… reading the reel, this can take a minute.</p>}
+        {busy && <Progress step={step} mode={mode} />}
       </form>
 
       {showCaptionFallback && (
@@ -75,5 +85,33 @@ export default function LinkInput({ busy, onSubmitLink, onSubmitCaption, error, 
         </form>
       )}
     </div>
+  );
+}
+
+const ORDER: ExtractStep[] = ["read", "write", "plate"];
+
+// Live steps from /api/extract: done ✓, current pulsing, upcoming dimmed.
+function Progress({ step, mode }: { step: ExtractStep | null; mode: "reel" | "idea" }) {
+  const current = step ? ORDER.indexOf(step) : 0;
+  return (
+    <ol aria-live="polite" className="mt-3 flex items-center gap-2 text-xs font-semibold">
+      {ORDER.map((s, i) => {
+        const state = i < current ? "done" : i === current ? "active" : "todo";
+        return (
+          <li key={s} className="flex items-center gap-2">
+            {i > 0 && <span aria-hidden="true" className={`h-px w-4 ${i <= current ? "bg-turmeric" : "bg-ink/20"}`} />}
+            <span
+              aria-current={state === "active" ? "step" : undefined}
+              className={`flex items-center gap-1 rounded-full px-2.5 py-1 ${
+                state === "done" ? "bg-turmeric-soft text-turmeric" : state === "active" ? "animate-pulse bg-chili text-white" : "bg-cream text-ink/40"
+              }`}
+            >
+              {state === "done" && <span aria-hidden="true">✓</span>}
+              {STEP_LABELS[mode][s]}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

@@ -66,6 +66,13 @@ Build mode: fast (learner asked to build everything, then get one explanation of
 
 ## Final Review
 
+Added at the learner's request ("build all your suggestions"), built and mechanically verified; each still needs the learner to try it:
+- [ ] Home: search plus High protein / Vegetarian / Under 20 min filters; favorite and delete saved cards
+- [ ] "Type an idea" input that makes a card without a reel
+- [ ] Step-by-step progress while converting (Reading reel → Writing the card → Plating)
+- [ ] Weekly plan page (`/plan`) with a combined shopping list
+- [ ] Share a card as text or image; light/dark toggle; logo and tagline in the header
+
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
@@ -88,3 +95,4 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Codex CLI is used from the ChatGPT desktop app (`/Applications/ChatGPT.app/Contents/Resources/codex`, already logged in) instead of a separate install; it takes `-i` images, `--output-schema`, and `-o`, and returned valid JSON in ~10–15s.
 - Slice 2's real-reel check ran on a public non-food reel (frames + caption → correctly "other"); recipe and workout parsing were verified via the caption path because no public recipe/workout reel URL was at hand — the learner tests with their own saved reels at final review.
 - Added `GET /api/status` so Home can show the missing-setup banner; providers share one `completeJSON` + zod + retry path in `lib/ai/index.ts` instead of duplicating each function per provider.
+- Learner asked to build all suggested refinements before review: search/filters, favorite/delete, typed-idea cards, streamed progress, weekly plan + shopping list (`data/plan.json`, `/api/plan`), share card, theme toggle, logo. The weekly plan is a scope addition beyond `scope.md`; kept small and local-only. Verified with `npm run build`, `tsc`, eslint on app code, and curl against the dev server (idea stream returned a valid recipe; plan PUT/GET; favorite PATCH; delete removes the card, its media, and its plan slots).
