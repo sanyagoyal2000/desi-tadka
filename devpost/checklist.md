@@ -29,7 +29,7 @@ Build mode: fast (learner asked to build everything, then get one explanation of
   Learner check: Paste a Western recipe reel and a workout reel. Does each card capture what the reel actually shows, and does it look like a card you'd want to cook or train from?
   Commit: `Turn reels into original recipe and workout cards`
 
-- [ ] **3. Swap ingredients into Indian versions (the star)**
+- [x] **3. Swap ingredients into Indian versions (the star)**
   Becomes usable: On a recipe card, "Add some tadka?" prompt; each ingredient has a ↺ swap icon that opens a sheet with AI Indian-ingredient suggestions or a type-your-own box. Applying a swap highlights it in turmeric, shows what it replaced, and updates protein and calories. "Make it vegetarian" converts all non-veg ingredients at once. In API mode a new picture is generated; in Codex mode the frame gets a "swapped" badge.
   Why now: This is the unique kernel — the cultural translation. It comes right after we can produce an original card, so it gets the most build and feedback time.
   PRD ref: `prd.md > Recipe Swaps (the star)`, `prd.md > The Core Journey` (steps 4–6), `prd.md > Recipe Card` (pictures)

@@ -1,4 +1,7 @@
 import { existsSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import { MEDIA_DIR, mediaUrl } from "../paths";
 import { z } from "zod";
 import {
   ExtractionSchema,
@@ -100,5 +103,64 @@ export async function suggestSwaps(card: Card, item: string, hint?: string): Pro
   return suggestions.slice(0, 4);
 }
 
+// Rewrites the recipe per `instruction`, then marks every ingredient whose name changed as swapped.
+async function rewriteRecipe(card: RecipeCard, instruction: string, forced: Set<number> = new Set()): Promise<RecipeCard> {
+  const r: RecipeRewrite = await ask(RecipeRewriteSchema, rewritePrompt(card, instruction), [], (v) => v.ingredients.length === card.ingredients.length);
+  const ingredients = r.ingredients.map((next, i) => {
+    const prev = card.ingredients[i];
+    const changed = forced.has(i) || norm(next.name) !== norm(prev.name);
+    if (!changed) return { ...prev, quantity: next.quantity || prev.quantity };
+    return { name: next.name, quantity: next.quantity, swapped: true, original: prev.original ?? `${prev.quantity} ${prev.name}`.trim() };
+  });
+  return {
+    ...card,
+    title: r.title || card.title,
+    proteinGrams: Math.round(r.proteinGrams),
+    calories: Math.round(r.calories),
+    ingredients,
+    steps: r.steps.length ? r.steps : card.steps,
+  };
+}
+
+const norm = (s: string) => s.trim().toLowerCase();
+
+export async function applyRecipeSwap(card: RecipeCard, index: number, replacement: string): Promise<RecipeCard> {
+  const target = card.ingredients[index];
+  if (!target) throw new AIResponseError("No such ingredient");
+  const updated = await rewriteRecipe(
+    card,
+    `Replace ingredient #${index + 1} "${target.quantity} ${target.name}" with "${replacement}". Keep every other ingredient exactly as it is.`,
+    new Set([index]),
+  );
+  // Keep the user's own wording for the swapped ingredient name.
+  updated.ingredients[index] = { ...updated.ingredients[index], name: replacement.trim() || updated.ingredients[index].name };
+  return withNewPicture(updated);
+}
+
+export async function makeVegetarian(card: RecipeCard): Promise<RecipeCard> {
+  const updated = await rewriteRecipe(
+    card,
+    `Make this recipe Indian-vegetarian: replace EVERY ingredient that contains meat, poultry, fish, seafood, eggs, or gelatin with a vegetarian, high-protein ingredient easy to find in India (e.g. paneer, tofu, soya chunks, chana, rajma, dal). Leave vegetarian ingredients unchanged.`,
+  );
+  return updated.ingredients.some((i, n) => i.swapped && !card.ingredients[n].swapped) ? withNewPicture(updated) : updated;
+}
+
+// API mode: draw the swapped dish. Codex mode: keep the reel frame (the card shows a "swapped" badge).
+async function withNewPicture(card: RecipeCard): Promise<RecipeCard> {
+  const provider = requireProvider();
+  const n = Date.now().toString(36);
+  const dir = path.join(MEDIA_DIR, card.id);
+  await mkdir(dir, { recursive: true });
+  const file = `swapped-${n}.png`;
+  const prompt = `Appetizing overhead food photo of "${card.title}", home-cooked in an Indian kitchen, made with ${card.ingredients
+    .map((i) => i.name)
+    .join(", ")}. Warm natural light, steel or ceramic plate, no text.`;
+  try {
+    if (await provider.generateImage(prompt, path.join(dir, file))) return { ...card, image: mediaUrl(card.id, file), imageIsGenerated: true };
+  } catch (err) {
+    console.error("[ai] image generation failed:", String(err).slice(0, 300));
+  }
+  return card;
+}
+
 export { MAX_WORKOUT_SWAPS };
-export type { RecipeRewrite };
