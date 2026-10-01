@@ -19,7 +19,7 @@ Build mode: fast (learner asked to build everything, then get one explanation of
   Learner check: Start the dev server, open it on your phone or in phone-size view, paste a recipe reel you've saved, and check that the caption and frames match the reel. Then paste "hello" and a fake reel link to see both error messages.
   Commit: `Scaffold DesiTadka and extract caption and frames from a reel`
 
-- [ ] **2. The reel becomes an original recipe or workout card**
+- [x] **2. The reel becomes an original recipe or workout card**
   Becomes usable: Pasting a reel shows a polished visual card: a recipe card (name, frame, prep time, protein, calories marked "approx.", ingredients, step count, steps) or a workout card (name, frequency, rounds, exercises with reps and frames). Non-recipe/workout reels say "This doesn't look like a recipe or workout." Missing AI config shows a banner on Home.
   Why now: The second unknown — whether the Codex CLI can act as the app's AI backend and return valid JSON from images. It also produces the "original" half of the before → after that the kernel needs.
   PRD ref: `prd.md > The Core Journey` (steps 2–3), `prd.md > Recipe Card`, `prd.md > Workout Card`
@@ -85,3 +85,6 @@ Activity mode: [live app and editor, explicit static fallback, focused alternati
 - Early hands-on checkpoint moved from after slice 3 into the final review — learner chose fast mode and asked to build everything first, then review.
 - Frames and generated images live in `data/media/<id>/` and are served by `app/api/media/[...path]/route.ts`, not `public/media/` — Next.js doesn't reliably serve files added to `public/` after the server starts.
 - Added optional `YTDLP_COOKIES_BROWSER` and an ffprobe fallback for video length — yt-dlp got blocked on one public reel and Instagram didn't always report a duration, which left a single frame.
+- Codex CLI is used from the ChatGPT desktop app (`/Applications/ChatGPT.app/Contents/Resources/codex`, already logged in) instead of a separate install; it takes `-i` images, `--output-schema`, and `-o`, and returned valid JSON in ~10–15s.
+- Slice 2's real-reel check ran on a public non-food reel (frames + caption → correctly "other"); recipe and workout parsing were verified via the caption path because no public recipe/workout reel URL was at hand — the learner tests with their own saved reels at final review.
+- Added `GET /api/status` so Home can show the missing-setup banner; providers share one `completeJSON` + zod + retry path in `lib/ai/index.ts` instead of duplicating each function per provider.

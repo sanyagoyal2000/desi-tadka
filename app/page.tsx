@@ -11,7 +11,15 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [showCaptionFallback, setShowCaptionFallback] = useState(false);
 
-  useEffect(() => clearDraft(), []);
+  const [configured, setConfigured] = useState(true);
+
+  useEffect(() => {
+    clearDraft();
+    fetch("/api/status")
+      .then((r) => r.json())
+      .then((s) => setConfigured(Boolean(s.configured)))
+      .catch(() => {});
+  }, []);
 
   async function extract(payload: { url?: string; caption?: string }) {
     setBusy(true);
@@ -35,6 +43,9 @@ export default function Home() {
 
   return (
     <main className="flex flex-col gap-6">
+      {!configured && (
+        <p className="rounded-2xl bg-chili px-4 py-3 text-sm font-semibold text-white">Add an OpenAI key or Codex path in .env.local.</p>
+      )}
       <LinkInput
         busy={busy}
         error={error}
