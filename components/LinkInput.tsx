@@ -56,8 +56,8 @@ export default function LinkInput({ busy, step, mode, onSubmitLink, onSubmitIdea
         </label>
         <p className="text-sm text-ink/60">
           {source === "reel"
-            ? "Recipe or fitness reel — we’ll turn it into a card you can swap and save."
-            : "Say what you’re craving or want to train — we’ll give it some desi tadka."}
+            ? "Recipe or fitness reel we’ll turn it into a personalized memory."
+            : "Say what you’re craving or want to train we’ll give it some desi tadka."}
         </p>
         <div className="mt-2 flex gap-2">
           <input
