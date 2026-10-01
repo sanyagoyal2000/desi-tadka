@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DesiTadka 🌶️
 
-## Getting Started
+Paste a Western fitness reel from Instagram and get a recipe or workout you can actually use in India. You see the original first, swap anything that doesn't fit (Indian-ingredient suggestions, "Make it vegetarian", up to 3 exercise swaps), and save the final version to your own collection.
 
-First, run the development server:
+## Run it
+
+Requirements: Node 20+, `yt-dlp` and `ffmpeg` (`brew install yt-dlp ffmpeg`), plus either the Codex CLI (logged in) or an OpenAI API key.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # pick AI_MODE=codex or AI_MODE=api and fill in the matching values
+npm install
+npm run dev -- -H 0.0.0.0
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Laptop: http://localhost:3000
+- Phone on the same Wi-Fi: `http://<your-laptop-ip>:3000` (find the IP with `ipconfig getifaddr en0`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+If Instagram blocks a reel, either set `YTDLP_COOKIES_BROWSER=chrome` in `.env.local` or use the "Paste the caption instead" box.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How it works
 
-## Learn More
+1. `lib/reel.ts` downloads the reel with yt-dlp, reads the caption, and grabs 5 frames with ffmpeg.
+2. `lib/ai/` sends frames + caption to the AI (Codex CLI or OpenAI API) and validates the JSON card with zod.
+3. Swaps go through `/api/suggest` and `/api/apply`; recipes are rewritten with new protein/calories, and workouts replace the exercise everywhere.
+4. Saved cards are stored in `data/cards.json` on the laptop.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Nutrition numbers are AI estimates.
