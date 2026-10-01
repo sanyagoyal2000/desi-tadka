@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDraft } from "@/lib/draft";
+import { clearDraft, useDraft } from "@/lib/draft";
 import { MAX_WORKOUT_SWAPS, type Card } from "@/lib/schema";
 import RecipeCard from "@/components/RecipeCard";
 import WorkoutCard from "@/components/WorkoutCard";
@@ -22,7 +22,9 @@ export default function ConvertPage() {
 
 // Holds the in-progress card in React state; it's discarded unless saved.
 function Editor({ initial }: { initial: Card }) {
+  const router = useRouter();
   const [card, setCard] = useState<Card>(initial);
+  const [saving, setSaving] = useState(false);
   const [sheetIndex, setSheetIndex] = useState<number | null>(null);
   const [busy, setBusy] = useState<number | "veg" | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +47,20 @@ function Editor({ initial }: { initial: Card }) {
       setError(e instanceof Error && e.message ? e.message : "Something went wrong.");
     } finally {
       setBusy(null);
+    }
+  }
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/cards", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ card }) });
+      if (!res.ok) throw new Error((await res.json()).error);
+      clearDraft();
+      router.push("/");
+    } catch (e) {
+      setError(e instanceof Error && e.message ? e.message : "Couldn't save.");
+      setSaving(false);
     }
   }
 
@@ -85,6 +101,27 @@ function Editor({ initial }: { initial: Card }) {
       ) : (
         <WorkoutCard card={card} onSwap={onSwap} busyIndex={typeof busy === "number" ? busy : null} />
       )}
+
+      <div className="sticky bottom-4 z-40 flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            clearDraft();
+            router.push("/");
+          }}
+          className="rounded-2xl bg-white px-5 py-4 font-semibold text-ink/70 shadow-lg"
+        >
+          Discard
+        </button>
+        <button
+          type="button"
+          disabled={saving || busy !== null}
+          onClick={save}
+          className="flex-1 rounded-2xl bg-leaf py-4 font-display text-xl font-bold text-white shadow-lg disabled:opacity-50"
+        >
+          {saving ? "Saving…" : "Save to my cards"}
+        </button>
+      </div>
 
       {sheetIndex !== null && (
         <SwapSheet

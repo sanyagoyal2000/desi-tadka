@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LinkInput from "@/components/LinkInput";
+import SavedList from "@/components/SavedList";
+import type { Card } from "@/lib/schema";
 import { clearDraft, saveDraft } from "@/lib/draft";
 
 export default function Home() {
@@ -12,6 +14,7 @@ export default function Home() {
   const [showCaptionFallback, setShowCaptionFallback] = useState(false);
 
   const [configured, setConfigured] = useState(true);
+  const [cards, setCards] = useState<Card[] | null>(null);
 
   useEffect(() => {
     clearDraft();
@@ -19,6 +22,10 @@ export default function Home() {
       .then((r) => r.json())
       .then((s) => setConfigured(Boolean(s.configured)))
       .catch(() => {});
+    fetch("/api/cards")
+      .then((r) => r.json())
+      .then((d) => setCards(d.cards ?? []))
+      .catch(() => setCards([]));
   }, []);
 
   async function extract(payload: { url?: string; caption?: string }) {
@@ -53,6 +60,10 @@ export default function Home() {
         onSubmitLink={(url) => extract({ url })}
         onSubmitCaption={(caption) => extract({ caption })}
       />
+      <section>
+        <h2 className="mb-3 font-display text-2xl font-extrabold">My cards</h2>
+        <SavedList cards={cards} />
+      </section>
     </main>
   );
 }

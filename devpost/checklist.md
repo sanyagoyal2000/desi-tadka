@@ -49,7 +49,7 @@ Build mode: fast (learner asked to build everything, then get one explanation of
   Learner check: Paste a workout reel, swap an exercise you'd skip, try to make a 4th swap, and confirm the plan still feels like the original.
   Commit: `Add workout exercise swaps with a 3-swap limit`
 
-- [ ] **5. Save cards to Home and open them later**
+- [x] **5. Save cards to Home and open them later**
   Becomes usable: Tapping Save adds the final, swapped card to the Home list (name, type tag, thumbnail). Tapping a saved card opens a read-only Card Detail. Cards survive restarting the server and are visible from both phone and laptop. Empty Home invites you to paste your first reel. Leaving Convert without Save discards the card.
   Why now: Completes the core journey and turns one-off conversions into your collection ("otherwise what is the point"). It's lowest-risk, so it comes last.
   PRD ref: `prd.md > Save and Home List`, `prd.md > Screens and Layout`, `prd.md > The Core Journey` (steps 7–8), `prd.md > States and Boundaries`
