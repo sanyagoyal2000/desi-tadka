@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <span className="font-display text-2xl font-extrabold leading-none text-chili sm:text-3xl">
                   Desi<span className="text-turmeric">Tadka</span>
                 </span>
-                <span className="mt-1 text-xs font-medium text-ink/60">Fitness reels, remade for Indian kitchens.</span>
+                <span className="mt-1 text-xs font-medium text-ink/60">Fitness reels, remade for Indian lifestyles.</span>
               </span>
             </Link>
             <nav className="flex shrink-0 items-center gap-2">

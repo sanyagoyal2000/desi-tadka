@@ -29,6 +29,8 @@ export async function extractReel(url: string, id: string): Promise<ReelContent>
 
   const args = ["--no-playlist", "--write-info-json", "--socket-timeout", "20", "-f", "mp4/best", "-o", path.join(TMP_DIR, `${id}.%(ext)s`)];
   if (process.env.YTDLP_COOKIES_BROWSER) args.push("--cookies-from-browser", process.env.YTDLP_COOKIES_BROWSER);
+  // On a server there is no browser: point this at an exported cookies.txt instead.
+  if (process.env.YTDLP_COOKIES_FILE) args.push("--cookies", process.env.YTDLP_COOKIES_FILE);
   args.push(url);
 
   try {
