@@ -31,6 +31,17 @@ function Editor({ initial }: { initial: Card }) {
 
   const items = card.kind === "recipe" ? card.ingredients : card.exercises;
 
+  // Ask for swaps for every item as soon as the card opens, so the sheet is usually instant.
+  const [allSuggestions, setAllSuggestions] = useState<Record<string, string[]> | null>(null);
+  const [preloading, setPreloading] = useState(true);
+  useEffect(() => {
+    fetch("/api/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ card: initial, all: true }) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setAllSuggestions(d?.all ?? null))
+      .catch(() => {})
+      .finally(() => setPreloading(false));
+  }, [initial]);
+
   async function apply(payload: Record<string, unknown>, busyKey: number | "veg") {
     setBusy(busyKey);
     setError(null);
@@ -127,6 +138,18 @@ function Editor({ initial }: { initial: Card }) {
         <SwapSheet
           card={card}
           item={items[sheetIndex].name}
+          quantity={card.kind === "recipe" ? card.ingredients[sheetIndex].quantity : undefined}
+          preloaded={allSuggestions?.[items[sheetIndex].name.trim().toLowerCase()]}
+          preloading={preloading}
+          onChangeQuantity={
+            card.kind === "recipe"
+              ? (to) => {
+                  const index = sheetIndex;
+                  setSheetIndex(null);
+                  apply({ action: "quantity", index, to }, index);
+                }
+              : undefined
+          }
           onClose={() => setSheetIndex(null)}
           onApply={(to) => {
             const index = sheetIndex;

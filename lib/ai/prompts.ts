@@ -16,7 +16,7 @@ Decide whether the reel is a "recipe", a "workout", or "other" (anything else).
 Write down the ORIGINAL version exactly as the reel presents it. Do NOT adapt, translate, or substitute anything yet.
 
 If recipe: title, prepTimeMinutes, the ingredients with quantities, clear numbered-style steps (no numbers in the text), and your best estimate of proteinGrams and calories PER SERVING. Leave frequency "", rounds 0, exercises [].
-If workout: title, frequency (e.g. "3x a week"), rounds, and each exercise with reps (e.g. "12 reps", "30 sec"). For each exercise set "frame" to the 1-based frame that best shows it (0 if none). Leave ingredients [], steps [], numbers 0.
+If workout: title, frequency "", rounds, and each exercise with reps (e.g. "12 reps", "30 sec"). For each exercise set "frame" to the 1-based frame that best shows it (0 if none). Leave ingredients [], steps [], numbers 0.
 If other: title can describe it; leave everything else empty or 0.
 heroFrame: the 1-based frame that best shows the finished dish or workout (0 if no frames).
 Respond only with JSON matching the schema.`;
@@ -33,7 +33,7 @@ ${idea}
 
 Decide whether they want a "recipe" or a "workout" ("other" only if it is clearly neither), then create one original, practical version of it.
 If recipe: title, prepTimeMinutes, ingredients with quantities, clear steps (no numbers in the text), and your best estimate of proteinGrams and calories PER SERVING. Leave frequency "", rounds 0, exercises [].
-If workout: title, frequency (e.g. "3x a week"), rounds, and 4-8 exercises with reps (e.g. "12 reps", "30 sec"); set each exercise frame to 0. Leave ingredients [], steps [], numbers 0.
+If workout: title, frequency "", rounds, and 4-8 exercises with reps (e.g. "12 reps", "30 sec"); set each exercise frame to 0. Leave ingredients [], steps [], numbers 0.
 heroFrame: 0.
 Respond only with JSON matching the schema.`;
 }
@@ -53,6 +53,23 @@ Exercises: ${card.exercises.map((e) => `${e.name} (${e.reps})`).join("; ")}
 
 Suggest 3 alternative exercises to replace "${item}" that train similar muscles and need little or no gym equipment.${hint ? ` The user wants to focus on: "${hint}".` : ""}
 Each suggestion is just the exercise name (max 4 words). Respond only with JSON.`;
+}
+
+export function suggestAllPrompt(card: Card): string {
+  if (card.kind === "recipe") {
+    return `${AUDIENCE}
+
+Recipe: ${card.title}
+Ingredients: ${card.ingredients.map((i) => `${i.quantity} ${i.name}`).join("; ")}
+
+For EVERY ingredient, suggest 3 replacements that work in this dish, are easy to find in India, and keep the protein as high as possible.
+Return one entry per ingredient, in order, with "item" set to the ingredient name exactly as written above. Each suggestion is just the ingredient name (max 4 words). Respond only with JSON.`;
+  }
+  return `Workout: ${card.title}
+Exercises: ${card.exercises.map((e) => `${e.name} (${e.reps})`).join("; ")}
+
+For EVERY distinct exercise, suggest 3 alternatives that train similar muscles and need little or no gym equipment.
+Return one entry per exercise, with "item" set to the exercise name exactly as written above. Each suggestion is just the exercise name (max 4 words). Respond only with JSON.`;
 }
 
 export function rewritePrompt(card: RecipeCard, instruction: string): string {

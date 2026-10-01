@@ -17,10 +17,9 @@ export default function WorkoutCard({ card, onSwap, busyIndex }: Props) {
         <span className="text-xs font-bold uppercase tracking-widest text-chili">Workout</span>
         <h2 className="font-display text-3xl font-extrabold leading-tight">{card.title}</h2>
 
-        <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+        <dl className="mt-4 grid grid-cols-2 gap-2 text-center">
           <Stat label="rounds" value={`${card.rounds}`} />
           <Stat label="exercises" value={`${card.exercises.length}`} />
-          <Stat label="how often" value={card.frequency || "—"} small />
         </dl>
 
         <h3 className="mt-5 font-display text-xl font-bold">Exercises</h3>

@@ -84,6 +84,11 @@ export type Extraction = z.infer<typeof ExtractionSchema>;
 
 export const SuggestionsSchema = z.object({ suggestions: z.array(z.string()).min(1) });
 
+// One call that suggests swaps for every ingredient/exercise, prefetched when a card opens.
+export const AllSuggestionsSchema = z.object({
+  items: z.array(z.object({ item: z.string(), suggestions: z.array(z.string()) })),
+});
+
 export const RecipeRewriteSchema = z.object({
   title: z.string(),
   proteinGrams: z.number(),

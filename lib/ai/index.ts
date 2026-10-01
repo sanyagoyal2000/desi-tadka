@@ -4,6 +4,7 @@ import path from "node:path";
 import { MEDIA_DIR, mediaUrl } from "../paths";
 import { z } from "zod";
 import {
+  AllSuggestionsSchema,
   ExtractionSchema,
   MAX_WORKOUT_SWAPS,
   RecipeRewriteSchema,
@@ -17,7 +18,7 @@ import {
 } from "../schema";
 import { codexProvider } from "./codexCli";
 import { openaiProvider } from "./openaiApi";
-import { extractionPrompt, ideaPrompt, rewritePrompt, suggestPrompt } from "./prompts";
+import { extractionPrompt, ideaPrompt, rewritePrompt, suggestAllPrompt, suggestPrompt } from "./prompts";
 import type { AIProvider } from "./types";
 
 export class AIConfigError extends Error {}
@@ -117,6 +118,12 @@ export async function suggestSwaps(card: Card, item: string, hint?: string): Pro
   return suggestions.slice(0, 4);
 }
 
+// Suggestions for every item at once, keyed by lower-cased name.
+export async function suggestAllSwaps(card: Card): Promise<Record<string, string[]>> {
+  const { items } = await ask(AllSuggestionsSchema, suggestAllPrompt(card));
+  return Object.fromEntries(items.filter((x) => x.suggestions.length).map((x) => [norm(x.item), x.suggestions.slice(0, 4)]));
+}
+
 // Rewrites the recipe per `instruction`, then marks every ingredient whose name changed as swapped.
 async function rewriteRecipe(card: RecipeCard, instruction: string, forced: Set<number> = new Set()): Promise<RecipeCard> {
   const r: RecipeRewrite = await ask(RecipeRewriteSchema, rewritePrompt(card, instruction), [], (v) => v.ingredients.length === card.ingredients.length);
@@ -149,6 +156,20 @@ export async function applyRecipeSwap(card: RecipeCard, index: number, replaceme
   // Keep the user's own wording for the swapped ingredient name.
   updated.ingredients[index] = { ...updated.ingredients[index], name: replacement.trim() || updated.ingredients[index].name };
   return withNewPicture(updated);
+}
+
+// Same ingredient, new amount: protein and calories are recalculated; no new picture.
+export async function changeQuantity(card: RecipeCard, index: number, quantity: string): Promise<RecipeCard> {
+  const target = card.ingredients[index];
+  if (!target) throw new AIResponseError("No such ingredient");
+  const updated = await rewriteRecipe(
+    card,
+    `Change the amount of ingredient #${index + 1} "${target.name}" from "${target.quantity}" to "${quantity}". Keep its name and every other ingredient exactly as they are; only adjust steps if the amount matters there.`,
+    new Set([index]),
+  );
+  const was = target.original ?? (target.quantity.trim() ? `${target.quantity} ${target.name}` : "no amount");
+  updated.ingredients[index] = { ...updated.ingredients[index], name: target.name, quantity, original: was };
+  return updated;
 }
 
 export async function makeVegetarian(card: RecipeCard): Promise<RecipeCard> {

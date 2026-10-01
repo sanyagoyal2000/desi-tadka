@@ -73,6 +73,10 @@ Added at the learner's request ("build all your suggestions"), built and mechani
 - [ ] Plan page (`/plan`) — shopping list removed; now a dated calendar (‹ › weeks, today highlighted, past days kept) at the learner's request; card detail adds to the next 7 dates
 - [ ] Share a card as text or image; light/dark toggle; logo and tagline in the header
 
+- [ ] Change an ingredient's amount from the swap sheet; protein and calories recalculate (learner request)
+- [ ] Swap suggestions for every item are fetched once when a card opens, and the sheet shows a clear loading message (learner: "looks weird empty")
+- [ ] "How often" removed from workout cards and shared text (learner request)
+
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

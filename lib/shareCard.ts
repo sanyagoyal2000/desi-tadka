@@ -16,7 +16,7 @@ export function shareText(card: Card): string {
   }
   return [
     `💪 ${card.title}`,
-    `${card.rounds} rounds · ${card.frequency || "any day"}`,
+    `${card.rounds} rounds · ${card.exercises.length} exercises`,
     "",
     ...card.exercises.map((e) => `• ${e.name} — ${e.reps}`),
     "",
