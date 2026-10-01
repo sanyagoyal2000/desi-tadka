@@ -163,4 +163,39 @@ async function withNewPicture(card: RecipeCard): Promise<RecipeCard> {
   return card;
 }
 
+export class SwapLimitError extends Error {}
+
+// Workout swaps need no AI rewrite: replace every occurrence of the exercise by name (prd.md > Workout Swaps).
+export async function applyWorkoutSwap(card: WorkoutCard, index: number, replacement: string): Promise<WorkoutCard> {
+  const target = card.exercises[index];
+  if (!target) throw new AIResponseError("No such exercise");
+  if (card.swapCount >= MAX_WORKOUT_SWAPS) throw new SwapLimitError(`You've used all ${MAX_WORKOUT_SWAPS} swaps — this keeps it the original plan.`);
+
+  let image: string | null = null;
+  const provider = getProvider();
+  if (provider) {
+    const dir = path.join(MEDIA_DIR, card.id);
+    await mkdir(dir, { recursive: true });
+    const file = `swapped-${Date.now().toString(36)}.png`;
+    try {
+      if (await provider.generateImage(`Clean fitness illustration of a person doing "${replacement}", side view, plain warm background, no text.`, path.join(dir, file))) {
+        image = mediaUrl(card.id, file);
+      }
+    } catch (err) {
+      console.error("[ai] image generation failed:", String(err).slice(0, 300));
+    }
+  }
+
+  const name = norm(target.name);
+  return {
+    ...card,
+    swapCount: card.swapCount + 1,
+    exercises: card.exercises.map((ex) =>
+      norm(ex.name) === name
+        ? { ...ex, name: replacement, image: image ?? ex.image, swapped: true, original: ex.original ?? ex.name }
+        : ex,
+    ),
+  };
+}
+
 export { MAX_WORKOUT_SWAPS };

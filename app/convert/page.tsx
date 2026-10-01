@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDraft } from "@/lib/draft";
-import type { Card } from "@/lib/schema";
+import { MAX_WORKOUT_SWAPS, type Card } from "@/lib/schema";
 import RecipeCard from "@/components/RecipeCard";
 import WorkoutCard from "@/components/WorkoutCard";
 import SwapSheet from "@/components/SwapSheet";
@@ -49,6 +49,10 @@ function Editor({ initial }: { initial: Card }) {
   }
 
   function onSwap(index: number) {
+    if (card.kind === "workout" && card.swapCount >= MAX_WORKOUT_SWAPS) {
+      setError(`You've used all ${MAX_WORKOUT_SWAPS} swaps — this keeps it the original plan.`);
+      return;
+    }
     setSheetIndex(index);
   }
 
@@ -102,7 +106,7 @@ function WorkoutPrompt({ swapCount }: { swapCount: number }) {
   return (
     <>
       <p className="font-display text-xl font-bold">Want to change anything? 💪</p>
-      <p className="text-sm text-white/85">Tap ↺ to swap an exercise, and tell me what to focus on. {3 - swapCount} of 3 swaps left.</p>
+      <p className="text-sm text-white/85">Tap ↺ to swap an exercise, and tell me what to focus on. {MAX_WORKOUT_SWAPS - swapCount} of {MAX_WORKOUT_SWAPS} swaps left.</p>
     </>
   );
 }

@@ -39,7 +39,7 @@ Build mode: fast (learner asked to build everything, then get one explanation of
   Learner check: Take a Western high-protein recipe reel, swap one ingredient using a suggestion, type your own for another, then try "Make it vegetarian." Do the swaps make sense for an Indian kitchen, and can you tell at a glance what changed?
   Commit: `Add Indian ingredient swaps, make-it-vegetarian, and nutrition updates`
 
-- [ ] **4. Swap up to 3 exercises in a workout**
+- [x] **4. Swap up to 3 exercises in a workout**
   Becomes usable: On a workout card, "Want to change anything?" prompt with swap icons per exercise; suggestions or your own. A swap replaces that exercise everywhere in the plan and highlights it; a counter shows swaps left; a 4th swap is blocked with a short message.
   Why now: Reuses the swap pipeline from slice 3, so it's cheap once that works, and keeps the second card type complete before we save anything.
   PRD ref: `prd.md > Workout Swaps`
