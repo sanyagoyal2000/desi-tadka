@@ -3,22 +3,27 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { DAYS, type Card, type Day, type Plan } from "@/lib/schema";
-import { DAY_LABELS } from "@/lib/plan";
+import type { Card, Plan } from "@/lib/schema";
+import { addDays, dayLabel, todayISO, weekDates, weekRange, weekStart } from "@/lib/plan";
 import { sortCards } from "@/lib/cardFilters";
 
-type DragData = { id: string; from?: { day: Day; index: number } };
+type DragData = { id: string; from?: { day: string; index: number } };
 
-// Weekly planner: drag (or tap-then-tap) saved cards onto days.
+// Calendar planner: browse weeks by date and drag (or tap-then-tap) saved cards onto days.
 export default function PlanPage() {
   const [cards, setCards] = useState<Card[] | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [overDay, setOverDay] = useState<Day | null>(null);
+  const [overDay, setOverDay] = useState<string | null>(null);
+  const [today, setToday] = useState<string | null>(null);
+  const [start, setStart] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     Promise.all([fetch("/api/cards").then((r) => r.json()), fetch("/api/plan").then((r) => r.json())])
       .then(([c, p]) => {
+        const t = todayISO(); // read on the device so "today" is the viewer's date
+        setToday(t);
+        setStart(weekStart(t));
         setCards(sortCards(c.cards ?? []));
         setPlan(p.plan);
       })
@@ -37,29 +42,34 @@ export default function PlanPage() {
     }
   }
 
-  function drop(day: Day, data: DragData) {
+  const idsOn = (day: string) => plan?.days[day] ?? [];
+
+  function drop(day: string, data: DragData) {
     if (!plan) return;
     const days = { ...plan.days };
     if (data.from) {
       if (data.from.day === day) return;
-      days[data.from.day] = days[data.from.day].filter((_, i) => i !== data.from!.index);
+      days[data.from.day] = idsOn(data.from.day).filter((_, i) => i !== data.from!.index);
     }
-    days[day] = [...days[day], data.id];
+    days[day] = [...idsOn(day), data.id];
     save({ days });
   }
 
-  function removeAt(day: Day, index: number) {
+  function removeAt(day: string, index: number) {
     if (!plan) return;
-    save({ days: { ...plan.days, [day]: plan.days[day].filter((_, i) => i !== index) } });
+    save({ days: { ...plan.days, [day]: idsOn(day).filter((_, i) => i !== index) } });
   }
+
+  const week = start ? weekDates(start) : [];
 
   function clearWeek() {
-    save({ days: Object.fromEntries(DAYS.map((d) => [d, []])) as unknown as Plan["days"] });
+    if (!plan) return;
+    save({ days: { ...plan.days, ...Object.fromEntries(week.map((d) => [d, []])) } });
   }
 
-  const planned = plan ? DAYS.flatMap((d) => plan.days[d].map((id) => byId.get(id)).filter((c): c is Card => Boolean(c))) : [];
+  const plannedThisWeek = week.some((d) => idsOn(d).some((id) => byId.has(id)));
 
-  if (cards === null || plan === null) {
+  if (cards === null || plan === null || !start || !today) {
     return (
       <main className="flex flex-col gap-3">
         {error ? <p className="font-semibold text-chili">{error}</p> : [0, 1, 2].map((i) => <div key={i} className="h-20 animate-pulse rounded-3xl bg-surface/60" />)}
@@ -70,9 +80,28 @@ export default function PlanPage() {
   return (
     <main className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-3xl font-extrabold">My week</h1>
+        <h1 className="font-display text-3xl font-extrabold">My plan</h1>
         <p className="text-sm text-ink/60">Drag a card onto a day, or tap a card and then tap a day.</p>
       </div>
+
+      <nav aria-label="Choose week" className="flex items-center justify-between gap-2 rounded-2xl bg-surface p-1.5 shadow-[0_2px_8px_rgba(42,26,16,0.06)]">
+        <button type="button" onClick={() => setStart(addDays(start, -7))} aria-label="Previous week" className="grid size-10 place-items-center rounded-xl text-xl font-bold text-chili hover:bg-cream">
+          ‹
+        </button>
+        <div className="flex flex-col items-center">
+          <span className="font-display text-lg font-bold leading-tight">{weekRange(start)}</span>
+          {start === weekStart(today) ? (
+            <span className="text-xs font-semibold text-turmeric">This week</span>
+          ) : (
+            <button type="button" onClick={() => setStart(weekStart(today))} className="text-xs font-semibold text-chili underline">
+              Back to this week
+            </button>
+          )}
+        </div>
+        <button type="button" onClick={() => setStart(addDays(start, 7))} aria-label="Next week" className="grid size-10 place-items-center rounded-xl text-xl font-bold text-chili hover:bg-cream">
+          ›
+        </button>
+      </nav>
       {error && <p className="rounded-2xl bg-surface px-4 py-3 text-sm font-semibold text-chili">{error}</p>}
 
       {cards.length === 0 ? (
@@ -105,7 +134,11 @@ export default function PlanPage() {
       )}
 
       <ol className="flex flex-col gap-2">
-        {DAYS.map((d) => (
+        {week.map((d) => {
+          const label = dayLabel(d);
+          const isToday = d === today;
+          const past = d < today;
+          return (
           <li
             key={d}
             onDragOver={(e) => {
@@ -120,10 +153,13 @@ export default function PlanPage() {
                 drop(d, JSON.parse(e.dataTransfer.getData("application/json")));
               } catch {}
             }}
-            className={`rounded-3xl bg-surface p-3 shadow-[0_2px_8px_rgba(42,26,16,0.06)] transition ${overDay === d ? "ring-2 ring-turmeric" : ""}`}
+            className={`rounded-3xl bg-surface p-3 shadow-[0_2px_8px_rgba(42,26,16,0.06)] transition ${overDay === d ? "ring-2 ring-turmeric" : isToday ? "ring-2 ring-chili" : ""} ${past ? "opacity-70" : ""}`}
           >
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-bold">{DAY_LABELS[d].long}</h2>
+              <h2 className="font-display text-lg font-bold">
+                {label.long} <span className="text-sm font-semibold text-ink/50">{label.date}</span>
+                {isToday && <span className="ml-2 rounded-full bg-chili px-2 py-0.5 align-middle text-[11px] font-bold text-white">Today</span>}
+              </h2>
               {selected && (
                 <button
                   type="button"
@@ -137,11 +173,11 @@ export default function PlanPage() {
                 </button>
               )}
             </div>
-            {plan.days[d].length === 0 ? (
-              <p className="mt-1 text-xs text-ink/40">Rest day — or drop something here.</p>
+            {idsOn(d).length === 0 ? (
+              <p className="mt-1 text-xs text-ink/40">{past ? "Nothing planned." : "Rest day — or drop something here."}</p>
             ) : (
               <ul className="mt-2 flex flex-col gap-1.5">
-                {plan.days[d].map((id, i) => {
+                {idsOn(d).map((id, i) => {
                   const c = byId.get(id);
                   if (!c) return null;
                   return (
@@ -158,7 +194,7 @@ export default function PlanPage() {
                       <button
                         type="button"
                         onClick={() => removeAt(d, i)}
-                        aria-label={`Remove ${c.title} from ${DAY_LABELS[d].long}`}
+                        aria-label={`Remove ${c.title} from ${label.long} ${label.date}`}
                         className="grid size-8 shrink-0 place-items-center rounded-full text-ink/40 hover:bg-surface hover:text-chili"
                       >
                         ×
@@ -169,10 +205,11 @@ export default function PlanPage() {
               </ul>
             )}
           </li>
-        ))}
+          );
+        })}
       </ol>
 
-      {planned.length > 0 && (
+      {plannedThisWeek && (
         <button type="button" onClick={clearWeek} className="text-sm font-semibold text-ink/50 hover:text-chili">
           Clear the week
         </button>

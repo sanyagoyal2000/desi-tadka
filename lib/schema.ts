@@ -56,15 +56,13 @@ export type Card = z.infer<typeof CardSchema>;
 
 export const MAX_WORKOUT_SWAPS = 3;
 
-// ---- Weekly plan: card ids per day (data/plan.json) ----
+// ---- Plan: card ids per calendar date, "YYYY-MM-DD" (data/plan.json) ----
 
-export const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
-export type Day = (typeof DAYS)[number];
 export const PlanSchema = z.object({
-  days: z.object(Object.fromEntries(DAYS.map((d) => [d, z.array(z.string())])) as Record<Day, z.ZodArray<z.ZodString>>),
+  days: z.record(z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.array(z.string())),
 });
 export type Plan = z.infer<typeof PlanSchema>;
-export const emptyPlan = (): Plan => ({ days: Object.fromEntries(DAYS.map((d) => [d, []])) as unknown as Plan["days"] });
+export const emptyPlan = (): Plan => ({ days: {} });
 
 // ---- Shapes the AI must return. Kept flat and fully "required" so both the
 // OpenAI API (strict JSON schema) and `codex exec --output-schema` accept them. ----

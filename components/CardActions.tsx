@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DAYS, type Card, type Day, type Plan } from "@/lib/schema";
-import { DAY_LABELS } from "@/lib/plan";
+import type { Card, Plan } from "@/lib/schema";
+import { addDays, dayLabel, todayISO } from "@/lib/plan";
 import { shareImage, shareText } from "@/lib/shareCard";
 
 const pill =
@@ -18,10 +18,16 @@ export default function CardActions({ card: initial }: { card: Card }) {
   const [sharing, setSharing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const [upcoming, setUpcoming] = useState<string[]>([]);
+
   useEffect(() => {
     fetch("/api/plan")
       .then((r) => r.json())
-      .then((d) => setPlan(d.plan))
+      .then((d) => {
+        const today = todayISO();
+        setUpcoming(Array.from({ length: 7 }, (_, i) => addDays(today, i)));
+        setPlan(d.plan);
+      })
       .catch(() => {});
   }, []);
 
@@ -69,10 +75,10 @@ export default function CardActions({ card: initial }: { card: Card }) {
     }
   }
 
-  async function toggleDay(day: Day) {
+  async function toggleDay(date: string) {
     if (!plan) return;
-    const has = plan.days[day].includes(card.id);
-    const next: Plan = { days: { ...plan.days, [day]: has ? plan.days[day].filter((x) => x !== card.id) : [...plan.days[day], card.id] } };
+    const ids = plan.days[date] ?? [];
+    const next: Plan = { days: { ...plan.days, [date]: ids.includes(card.id) ? ids.filter((x) => x !== card.id) : [...ids, card.id] } };
     setPlan(next);
     const res = await fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan: next }) }).catch(() => null);
     if (!res?.ok) {
@@ -117,23 +123,26 @@ export default function CardActions({ card: initial }: { card: Card }) {
       )}
 
       <div className="rounded-3xl bg-surface p-4 shadow-[0_2px_8px_rgba(42,26,16,0.06)]">
-        <p className="font-display text-lg font-bold">📅 Add to my week</p>
+        <p className="font-display text-lg font-bold">📅 Add to my plan</p>
+        <p className="text-xs text-ink/50">Next 7 days — older and later dates are on the Plan page.</p>
         <div role="group" aria-label="Days" className="mt-2 grid grid-cols-7 gap-1.5">
-          {DAYS.map((d) => {
-            const on = plan?.days[d].includes(card.id) ?? false;
+          {upcoming.map((d, i) => {
+            const on = plan?.days[d]?.includes(card.id) ?? false;
+            const label = dayLabel(d);
             return (
               <button
                 key={d}
                 type="button"
                 disabled={!plan}
                 aria-pressed={on}
-                aria-label={DAY_LABELS[d].long}
+                aria-label={`${label.long} ${label.date}`}
                 onClick={() => toggleDay(d)}
-                className={`rounded-xl py-2 text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-turmeric disabled:opacity-40 ${
+                className={`flex flex-col items-center rounded-xl py-1.5 text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-turmeric disabled:opacity-40 ${
                   on ? "bg-chili text-white" : "bg-cream text-ink/70 hover:text-ink"
                 }`}
               >
-                {DAY_LABELS[d].short}
+                <span className="text-[10px] font-semibold opacity-70">{i === 0 ? "Today" : label.short}</span>
+                <span className="text-base leading-tight">{label.dayOfMonth}</span>
               </button>
             );
           })}
