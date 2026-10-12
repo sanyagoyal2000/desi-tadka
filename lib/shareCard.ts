@@ -26,7 +26,7 @@ export function shareText(card: Card): string {
 
 const W = 1080;
 const H = 1350;
-const C = { cream: "#fdf6ee", ink: "#2a1a10", chili: "#d9480f", turmeric: "#f08c00", muted: "#7a6a5e" };
+const C = { base: "#08112b", ink: "#f2f0ff", volt: "#b49cff", electric: "#3a6cff", violet: "#6a2cff", magenta: "#b02cf0", aqua: "#43e8d0", muted: "#9aa3c7" };
 
 function loadImage(src: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
@@ -46,10 +46,10 @@ export async function shareImage(card: Card): Promise<Blob | null> {
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   await document.fonts?.ready;
-  const display = getComputedStyle(document.body).getPropertyValue("--font-baloo").trim() || "sans-serif";
+  const display = getComputedStyle(document.body).getPropertyValue("--font-montserrat").trim() || "sans-serif";
   const sans = getComputedStyle(document.body).getPropertyValue("--font-inter").trim() || "sans-serif";
 
-  ctx.fillStyle = C.cream;
+  ctx.fillStyle = C.base;
   ctx.fillRect(0, 0, W, H);
 
   // hero photo (cover-fit) or gradient
@@ -67,26 +67,27 @@ export async function shareImage(card: Card): Promise<Blob | null> {
     ctx.restore();
   } else {
     const g = ctx.createLinearGradient(0, 0, W, heroH);
-    g.addColorStop(0, C.turmeric);
-    g.addColorStop(1, C.chili);
+    g.addColorStop(0, C.electric);
+    g.addColorStop(0.55, C.violet);
+    g.addColorStop(1, C.magenta);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, heroH);
   }
 
   let y = heroH + 80;
-  ctx.fillStyle = card.kind === "recipe" ? C.chili : "#2b8a3e";
+  ctx.fillStyle = card.kind === "recipe" ? C.volt : C.aqua;
   ctx.font = `700 30px ${sans}`;
   ctx.fillText(card.kind === "recipe" ? "RECIPE" : "WORKOUT", 72, y);
 
   y += 72;
   ctx.fillStyle = C.ink;
-  ctx.font = `800 68px ${display}`;
-  for (const line of wrap(ctx, card.title, W - 144).slice(0, 2)) {
+  ctx.font = `900 64px ${display}`;
+  for (const line of wrap(ctx, card.title.toUpperCase(), W - 144).slice(0, 2)) {
     ctx.fillText(line, 72, y);
     y += 74;
   }
 
-  ctx.fillStyle = C.chili;
+  ctx.fillStyle = C.volt;
   ctx.font = `700 40px ${display}`;
   const stats =
     card.kind === "recipe"
@@ -105,11 +106,15 @@ export async function shareImage(card: Card): Promise<Blob | null> {
     y += 48;
   }
 
-  ctx.fillStyle = C.chili;
+  const bar = ctx.createLinearGradient(0, 0, W, 0);
+  bar.addColorStop(0, C.electric);
+  bar.addColorStop(0.55, C.violet);
+  bar.addColorStop(1, C.magenta);
+  ctx.fillStyle = bar;
   ctx.fillRect(0, H - 90, W, 90);
-  ctx.fillStyle = C.cream;
-  ctx.font = `800 40px ${display}`;
-  ctx.fillText("DesiTadka 🌶️", 72, H - 32);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = `900 40px ${display}`;
+  ctx.fillText("DESITADKA", 72, H - 32);
 
   return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
 }

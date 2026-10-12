@@ -89,7 +89,7 @@ export default function SwapSheet({ card, item, quantity, preloaded, preloading,
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="e.g. 150 g, 2 tbsp"
-                className="min-w-0 flex-1 rounded-2xl bg-cream px-4 py-3 outline-none focus:ring-2 focus:ring-turmeric"
+                className="min-w-0 flex-1 rounded-2xl bg-canvas px-4 py-3 outline-none focus:ring-2 focus:ring-electric"
               />
               <button type="submit" disabled={!amountChanged} className="rounded-2xl bg-ink/80 px-4 font-semibold text-white disabled:opacity-40">
                 Update
@@ -102,12 +102,12 @@ export default function SwapSheet({ card, item, quantity, preloaded, preloading,
         {suggestions === null ? (
           <div role="status" className="mt-2">
             <p className="flex items-center gap-2 text-sm text-ink/60">
-              <span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-turmeric border-t-transparent" />
+              <span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-electric border-t-transparent" />
               Finding {isWorkout ? "alternatives" : "desi swaps"} for {item}… usually about 10 seconds.
             </p>
             <div aria-hidden="true" className="mt-2 flex flex-wrap gap-2">
               {[0, 1, 2].map((i) => (
-                <span key={i} className="h-11 w-28 animate-pulse rounded-full bg-turmeric-soft" />
+                <span key={i} className="h-11 w-28 animate-pulse rounded-full bg-electric-soft" />
               ))}
             </div>
             <p className="mt-2 text-xs text-ink/50">Know what you want? Type it below — no need to wait.</p>
@@ -119,14 +119,14 @@ export default function SwapSheet({ card, item, quantity, preloaded, preloading,
                 key={s}
                 type="button"
                 onClick={() => onApply(s)}
-                className="rounded-full border-2 border-turmeric bg-turmeric-soft px-4 py-2 font-semibold text-ink active:scale-95"
+                className="rounded-full border-2 border-electric bg-electric-soft px-4 py-2 font-semibold text-ink active:scale-95"
               >
                 {s}
               </button>
             ))}
           </div>
         )}
-        {error && <p className="mt-2 text-sm font-semibold text-chili">{error}</p>}
+        {error && <p className="mt-2 text-sm font-semibold text-blaze">{error}</p>}
 
         {isWorkout && (
           <form
@@ -140,7 +140,7 @@ export default function SwapSheet({ card, item, quantity, preloaded, preloading,
               value={hint}
               onChange={(e) => setHint(e.target.value)}
               placeholder="Focus on… (e.g. knee friendly, no equipment)"
-              className="min-w-0 flex-1 rounded-2xl bg-cream px-4 py-3 outline-none focus:ring-2 focus:ring-turmeric"
+              className="min-w-0 flex-1 rounded-2xl bg-canvas px-4 py-3 outline-none focus:ring-2 focus:ring-electric"
             />
             <button type="submit" className="rounded-2xl bg-ink/80 px-4 font-semibold text-white">
               Ask
@@ -159,9 +159,9 @@ export default function SwapSheet({ card, item, quantity, preloaded, preloading,
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
             placeholder="Or type your own"
-            className="min-w-0 flex-1 rounded-2xl bg-cream px-4 py-3 outline-none focus:ring-2 focus:ring-turmeric"
+            className="min-w-0 flex-1 rounded-2xl bg-canvas px-4 py-3 outline-none focus:ring-2 focus:ring-electric"
           />
-          <button type="submit" disabled={!custom.trim()} className="rounded-2xl bg-chili px-4 font-display font-bold text-white disabled:opacity-40">
+          <button type="submit" disabled={!custom.trim()} className="rounded-2xl bg-volt px-4 font-display font-bold text-white disabled:opacity-40">
             Swap
           </button>
         </form>

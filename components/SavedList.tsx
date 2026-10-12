@@ -13,8 +13,8 @@ const SWIPE_OPEN = 96; // px the row slides left to reveal Delete
 type Kind = Card["kind"];
 
 const SECTIONS: { kind: Kind; title: string; Icon: Icon; empty: string; accent: string }[] = [
-  { kind: "recipe", title: "Recipes", Icon: ForkKnife, empty: "No recipes yet. Share a recipe reel or idea above.", accent: "text-chili" },
-  { kind: "workout", title: "Workouts", Icon: Barbell, empty: "No workouts yet. Share a workout reel or idea above.", accent: "text-leaf" },
+  { kind: "recipe", title: "Recipes", Icon: ForkKnife, empty: "No recipes yet. Share a recipe reel or idea above.", accent: "text-volt" },
+  { kind: "workout", title: "Workouts", Icon: Barbell, empty: "No workouts yet. Share a workout reel or idea above.", accent: "text-aqua" },
 ];
 
 type Actions = { onToggleFavorite: (c: Card) => void; onDelete: (c: Card) => void };
@@ -59,7 +59,7 @@ function Section({
           <div className="h-24 animate-pulse rounded-3xl bg-surface/60" />
         </div>
       ) : cards.length === 0 ? (
-        <div className="rounded-3xl border-2 border-dashed border-turmeric/50 px-6 py-6 text-center">
+        <div className="rounded-3xl border-2 border-dashed border-electric/50 px-6 py-6 text-center">
           <p className="text-sm text-ink/60">{filtering ? `No ${title.toLowerCase()} match.` : empty}</p>
         </div>
       ) : (
@@ -92,7 +92,7 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
   const swaps = c.kind === "recipe" ? c.ingredients.filter((i) => i.swapped).length : c.swapCount;
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl ${offset < 0 ? "bg-chili" : ""}`}>
+    <div className={`relative overflow-hidden rounded-3xl ${offset < 0 ? "bg-volt" : ""}`}>
       <button
         type="button"
         tabIndex={open ? 0 : -1}
@@ -104,7 +104,7 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
       </button>
       <div
         style={{ transform: `translateX(${offset}px)`, touchAction: "pan-y" }}
-        className={`relative flex select-none items-center rounded-3xl bg-surface shadow-[0_4px_16px_rgba(42,26,16,0.06)] ${dragging ? "" : "transition-transform duration-200"}`}
+        className={`relative flex select-none items-center rounded-3xl bg-surface shadow-[0_4px_16px_rgba(24,12,80,0.06)] ${dragging ? "" : "transition-transform duration-200"}`}
         onPointerDown={(e) => {
           drag.current = { x: e.clientX, base: offset, moved: false };
         }}
@@ -141,9 +141,9 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
               if (open && !drag.current?.moved) setOffset(0);
             }
           }}
-          className="flex min-w-0 flex-1 items-center gap-3 rounded-3xl p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-turmeric"
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-3xl p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
         >
-          <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-turmeric-soft text-turmeric">
+          <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-electric-soft text-electric">
             {image ? <img src={image} alt="" draggable={false} className="size-full object-cover" /> : c.kind === "recipe" ? <ForkKnife aria-hidden="true" size={32} weight="duotone" /> : <Barbell aria-hidden="true" size={32} weight="duotone" />}
           </div>
           <div className="min-w-0 flex-1">
@@ -151,7 +151,7 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
             <p className="text-xs text-ink/60">
               {c.kind === "recipe" ? `${c.proteinGrams}g protein · ${c.calories} cal` : `${c.exercises.length} exercises · ${c.rounds} rounds`}
               {swaps > 0 && (
-                <span className="ml-1 inline-flex items-center gap-0.5 font-semibold text-turmeric">
+                <span className="ml-1 inline-flex items-center gap-0.5 font-semibold text-electric">
                   · <ArrowsClockwise aria-hidden="true" size={12} weight="bold" /> Personalized
                 </span>
               )}
@@ -163,8 +163,8 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
           aria-pressed={Boolean(c.favorite)}
           aria-label={c.favorite ? `Unpin ${c.title}` : `Pin ${c.title} to the top`}
           onClick={() => onToggleFavorite(c)}
-          className={`mr-2 grid size-11 shrink-0 place-items-center rounded-full transition hover:bg-cream focus-visible:outline-2 focus-visible:outline-turmeric ${
-            c.favorite ? "text-turmeric" : "text-ink/25"
+          className={`mr-2 grid size-11 shrink-0 place-items-center rounded-full transition hover:bg-canvas focus-visible:outline-2 focus-visible:outline-electric ${
+            c.favorite ? "text-electric" : "text-ink/25"
           }`}
         >
           <Star aria-hidden="true" size={24} weight={c.favorite ? "fill" : "regular"} />
@@ -176,7 +176,7 @@ function SwipeRow({ card: c, onToggleFavorite, onDelete }: { card: Card } & Acti
 
 function Pager({ title, page, pageCount, onChange }: { title: string; page: number; pageCount: number; onChange: (p: number) => void }) {
   const btn =
-    "grid size-10 place-items-center rounded-full bg-surface font-display text-xl font-bold shadow-[0_2px_8px_rgba(42,26,16,0.08)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-turmeric";
+    "grid size-10 place-items-center rounded-full bg-surface font-display text-xl font-bold shadow-[0_2px_8px_rgba(24,12,80,0.08)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-electric";
   return (
     <nav aria-label={`${title} pages`} className="mt-4 flex items-center justify-center gap-3">
       <button type="button" className={btn} disabled={page === 0} onClick={() => onChange(page - 1)} aria-label="Previous page">
@@ -190,7 +190,7 @@ function Pager({ title, page, pageCount, onChange }: { title: string; page: numb
             onClick={() => onChange(i)}
             aria-label={`Page ${i + 1}`}
             aria-current={i === page ? "page" : undefined}
-            className={`h-2.5 rounded-full transition-all ${i === page ? "w-6 bg-chili" : "w-2.5 bg-ink/20 hover:bg-ink/40"}`}
+            className={`h-2.5 rounded-full transition-all ${i === page ? "w-6 bg-volt" : "w-2.5 bg-ink/20 hover:bg-ink/40"}`}
           />
         ))}
       </div>

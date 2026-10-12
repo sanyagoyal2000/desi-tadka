@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import LinkInput from "@/components/LinkInput";
 import SavedList from "@/components/SavedList";
 import RoutineSection from "@/components/RoutineSection";
+import TodayStrip from "@/components/TodayStrip";
 import type { Card } from "@/lib/schema";
 import { clearDraft, saveDraft } from "@/lib/draft";
 import { streamExtract, type ExtractStep } from "@/lib/progress";
@@ -102,8 +103,25 @@ export default function Home() {
   return (
     <main className="flex flex-col gap-6">
       {!configured && (
-        <p className="rounded-2xl bg-chili px-4 py-3 text-sm font-semibold text-white">Add an OpenAI key or Codex path in .env.local.</p>
+        <p className="rounded-2xl bg-blaze px-4 py-3 text-sm font-semibold text-white">Add an OpenAI key or Codex path in .env.local.</p>
       )}
+      <section aria-label="DesiTadka" className="flex items-end justify-between gap-3 pt-2">
+        <h1 className="font-display text-[2.6rem] font-black leading-[0.92] tracking-tight">
+          Your reels,
+          <br />
+          <span className="text-gradient">made real.</span>
+        </h1>
+        {cards && cards.length > 0 && (
+          <p className="flex shrink-0 items-end gap-1.5 pb-1">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/60 [writing-mode:vertical-rl] rotate-180">Total</span>
+            <span className="flex flex-col items-start">
+              <span className="font-display text-5xl font-black leading-none tabular-nums">{cards.length}</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/60">saved</span>
+            </span>
+          </p>
+        )}
+      </section>
+      <TodayStrip />
       <LinkInput
         busy={busy}
         step={step}
@@ -128,7 +146,7 @@ export default function Home() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name, ingredient or exercise"
-            className="w-full rounded-2xl border-2 border-transparent bg-surface py-3 pl-11 pr-4 text-base shadow-[0_2px_8px_rgba(42,26,16,0.06)] outline-none focus:border-turmeric"
+            className="w-full rounded-2xl border-2 border-transparent bg-surface py-3 pl-11 pr-4 text-base shadow-[0_2px_8px_rgba(24,12,80,0.06)] outline-none focus:border-electric"
           />
           </div>
           <div role="group" aria-label="Recipe filters" className="flex flex-wrap gap-2">
@@ -140,8 +158,8 @@ export default function Home() {
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggleFilter(f.id)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
-                    on ? "bg-chili text-white" : "bg-surface text-ink/70 hover:text-ink"
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-electric ${
+                    on ? "bg-volt text-white" : "bg-surface text-ink/70 hover:text-ink"
                   }`}
                 >
                   {(() => {

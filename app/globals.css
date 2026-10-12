@@ -3,46 +3,138 @@
 /* `dark:` follows the resolved theme the inline script in layout.tsx puts on <html>. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* Theme-dependent colours are plain vars so dark mode can swap them. */
+/* Electric night: deep navy, violet→blue glow, aqua for protein, pink for burn.
+   Accent text colours are lighter in dark mode so they stay readable on navy;
+   solid accent fills are painted with fixed gradients (below) so white text always reads. */
 :root {
-  --cream: #fdf6ee;
-  --ink: #2a1a10;
+  --base: #eef0ff;
+  --ink: #120a3a;
   --surface: #ffffff;
-  --turmeric-soft: #fff1d6;
+  --electric-soft: #e7e5ff;
+  --volt: #5b21e6;
+  --electric: #2f5bea;
+  --aqua: #0b7f86;
+  --blaze: #d6246e;
+  --glow-a: rgba(91, 33, 230, 0.16);
+  --glow-b: rgba(47, 91, 234, 0.14);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --cream: #1a120c;
-    --ink: #f6ebe0;
-    --surface: #2a1d14;
-    --turmeric-soft: #3d2a10;
+    --base: #08112b;
+    --ink: #f2f0ff;
+    --surface: #121c42;
+    --electric-soft: #1c2862;
+    --volt: #b49cff;
+    --electric: #7fb2ff;
+    --aqua: #43e8d0;
+    --blaze: #ff6fae;
+    --glow-a: rgba(110, 52, 255, 0.35);
+    --glow-b: rgba(47, 108, 255, 0.28);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --cream: #1a120c;
-  --ink: #f6ebe0;
-  --surface: #2a1d14;
-  --turmeric-soft: #3d2a10;
+  --base: #08112b;
+  --ink: #f2f0ff;
+  --surface: #121c42;
+  --electric-soft: #1c2862;
+  --volt: #b49cff;
+  --electric: #7fb2ff;
+  --aqua: #43e8d0;
+  --blaze: #ff6fae;
+  --glow-a: rgba(110, 52, 255, 0.35);
+  --glow-b: rgba(47, 108, 255, 0.28);
   color-scheme: dark;
 }
 
 @theme inline {
-  --color-chili: #d9480f;
-  --color-turmeric: #f08c00;
-  --color-turmeric-soft: var(--turmeric-soft);
-  --color-cream: var(--cream);
+  --color-volt: var(--volt);
+  --color-electric: var(--electric);
+  --color-electric-soft: var(--electric-soft);
+  --color-canvas: var(--base);
   --color-surface: var(--surface);
   --color-ink: var(--ink);
-  --color-leaf: #2b8a3e;
-  --font-display: var(--font-baloo);
+  --color-aqua: var(--aqua);
+  --color-blaze: var(--blaze);
+  --font-display: var(--font-montserrat);
   --font-sans: var(--font-inter);
 }
 
+/* Solid accent fills → the reference's glowing gradients. White text passes contrast on all of them. */
+.bg-volt {
+  background-color: #6a2cff;
+  background-image: linear-gradient(120deg, #3a6cff 0%, #6a2cff 52%, #a12cf0 100%);
+  color: #fff;
+}
+.bg-electric {
+  background-color: #3d6bff;
+  background-image: linear-gradient(120deg, #2f6bff, #5a3dff);
+  color: #fff;
+}
+.bg-blaze {
+  background-color: #d6246e;
+  background-image: linear-gradient(120deg, #d6246e, #a3268f);
+  color: #fff;
+}
+.bg-aqua {
+  background-color: #0b7f86;
+  background-image: linear-gradient(120deg, #0b7f86, #1f5fe0);
+  color: #fff;
+}
+
 body {
-  background: var(--cream);
+  background-color: var(--base);
+  background-image:
+    radial-gradient(60rem 40rem at 110% -10%, var(--glow-a), transparent 60%),
+    radial-gradient(50rem 40rem at -20% 30%, var(--glow-b), transparent 60%);
+  background-attachment: fixed;
   color: var(--ink);
+}
+
+/* Big glowing hero surface: violet base with blue and magenta light blobs, white type. */
+.glow-card {
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background-color: #4b1fd6;
+  background-image:
+    radial-gradient(70% 90% at 0% 0%, rgba(58, 140, 255, 0.95), transparent 60%),
+    radial-gradient(60% 80% at 100% 100%, rgba(190, 50, 255, 0.85), transparent 60%),
+    radial-gradient(50% 60% at 60% 40%, rgba(90, 60, 255, 0.9), transparent 70%),
+    linear-gradient(160deg, #3b2bd9, #5a1fe0);
+  box-shadow: 0 18px 50px rgba(80, 30, 220, 0.35);
+}
+
+.text-gradient {
+  background-image: linear-gradient(100deg, #5b8cff, #8b5cff 50%, #d05bff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Section and page titles: bold, uppercase, tight — like the reference posters. */
+h1.font-display,
+h2.font-display {
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+/* Meal scan: a bright band sweeps over the plate photo while the AI reads it. */
+@keyframes scan-sweep {
+  from { top: -33%; }
+  to { top: 100%; }
+}
+.scan-line {
+  animation: scan-sweep 1.6s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-line { animation: none; top: 33%; }
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--ink) 45%, transparent);
 }

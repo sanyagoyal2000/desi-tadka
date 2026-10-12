@@ -42,8 +42,8 @@ export default function RoutineButton({ exercise, cardId, cardTitle }: { exercis
       disabled={busy}
       aria-pressed={on}
       aria-label={on ? `Remove ${exercise.name} from my routine` : `Add ${exercise.name} to my routine`}
-      className={`flex h-10 shrink-0 items-center gap-1 rounded-full px-3 text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-turmeric disabled:opacity-50 ${
-        on ? "bg-leaf text-white" : "bg-turmeric-soft text-turmeric"
+      className={`flex h-10 shrink-0 items-center gap-1 rounded-full px-3 text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-electric disabled:opacity-50 ${
+        on ? "bg-aqua text-white" : "bg-electric-soft text-electric"
       }`}
     >
       {on ? <Check aria-hidden="true" size={14} weight="bold" /> : <Plus aria-hidden="true" size={14} weight="bold" />}

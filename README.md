@@ -34,6 +34,15 @@ In Instagram: tap **Share** (paper plane) on a reel → **Share to…** / **More
 - **Remind me** (on a saved card): pick a day and time → it goes on your Plan and opens a calendar event (`/api/reminder`, an `.ics` file). On iPhone, Safari shows **Add to Calendar**; the phone's own alert is the nudge.
 - **My routine**: on a saved workout, tap **+ Routine** on any single exercise. They collect on Home under *My routine* (`data/routine.json`), with a **weekly nudge** (pick days + time) that repeats in your calendar.
 
+## Today: thali photo → rings → burn it back → camera coach
+
+- **Snap your plate** (`/today`): take a photo of your thali, or type "3 roti, dal, bhindi". The AI lists each item in Indian portions (roti, katori, glass) with calories and protein, and you fix counts with − / + before logging (`/api/meal/scan`, `data/log.json`).
+- **Rings**: calories eaten against your budget (workouts earn calories back), protein against your goal, and calories burned. Set goals and body weight under *Daily goals* (`data/goals.json`).
+- **Close the gap**: when you're short on protein, Today picks the saved reel recipe that best fills the gap. On a saved recipe, **I cooked this!** logs one serving.
+- **Burn it back**: every meal is shown as rounds of one of your own saved workouts (favorites first). Tap it to start that workout.
+- **Camera coach** (`/cards/<id>/coach`): prop the phone up and step back. Pose detection (MediaPipe, runs in the browser, so video never leaves the phone) counts reps out loud, gives form cues ("Sit a little deeper"), times planks, rests between moves, and logs the burn to Today. Rep logic is in `lib/coach/motion.ts`: moves are matched by name (squat → knee angle, push-up → elbow, jacks → arms, high knees → alternating knees), and an unknown move follows whichever joint is moving most. A no-camera mode counts by taps.
+- The camera needs **HTTPS or localhost**, so on the iPhone use the deployed HTTPS URL (see below). Plain `http://<laptop-ip>:3000` won't get camera access.
+
 ## Put it online (Oracle Cloud, free)
 
 See [DEPLOY.md](DEPLOY.md): Docker + HTTPS + an access code, so your iPhone can use DesiTadka without the laptop.
@@ -43,6 +52,6 @@ See [DEPLOY.md](DEPLOY.md): Docker + HTTPS + an access code, so your iPhone can 
 1. `lib/reel.ts` downloads the reel with yt-dlp, reads the caption, and grabs 5 frames with ffmpeg.
 2. `lib/ai/` sends frames + caption to the AI (Codex CLI or OpenAI API) and validates the JSON card with zod.
 3. Swaps go through `/api/suggest` and `/api/apply`; recipes are rewritten with new protein/calories, and workouts replace the exercise everywhere.
-4. Saved cards are stored in `data/cards.json`, the plan in `data/plan.json`, and routine exercises in `data/routine.json`, all on the laptop.
+4. Saved cards are stored in `data/cards.json`, the plan in `data/plan.json`, routine exercises in `data/routine.json`, and meals/workouts and goals in `data/log.json` and `data/goals.json`, all on the laptop.
 
 Nutrition numbers are AI estimates.

@@ -91,3 +91,20 @@ Rules:
 - Keep the title close to the original but reflect the main swap if it changes the dish (e.g. "Paneer Tikka Wrap").
 Respond only with JSON.`;
 }
+
+// Plate photo and/or typed description → itemised Indian portions with per-portion numbers.
+export function mealScanPrompt(note: string, hasPhoto: boolean): string {
+  return `You are a nutrition assistant for people in India. ${hasPhoto ? "A photo of a meal is attached." : "No photo; use the description only."}
+${note ? `The user says: """${note}"""` : ""}
+
+List every food item you can identify${hasPhoto ? " on the plate (thali, katoris, rotis, rice, sabzi, dal, curd, salad, chutney, sweets, drinks)" : ""}.
+For each item:
+- name: the usual Indian name (e.g. "Dal tadka", "Phulka roti", "Jeera rice", "Aloo gobi", "Dahi").
+- portion: ONE household unit in Indian terms ("1 roti", "1 katori (150 g)", "1 cup cooked", "1 piece", "1 glass (200 ml)").
+- count: how many of that unit are there (e.g. 3 for three rotis, 0.5 for half a katori). ${hasPhoto ? "Count what is visible; judge katori size from the plate." : "Use the numbers the user gives, otherwise 1."}
+- calories and proteinGrams: for ONE portion (not multiplied by count), typical home-style preparation with normal oil/ghee.
+Prefer home-cooked estimates over restaurant ones unless it clearly looks like restaurant food.
+title: a short name for the meal (e.g. "Dal-roti thali", "Paneer wrap and lassi").
+If there is no food at all, return an empty items list and title "No food found".
+Respond only with JSON matching the schema.`;
+}

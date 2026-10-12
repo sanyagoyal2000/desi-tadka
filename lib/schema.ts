@@ -77,8 +77,68 @@ export const RoutineItemSchema = z.object({
 });
 export type RoutineItem = z.infer<typeof RoutineItemSchema>;
 
+// ---- Today log: meals eaten and workouts done, per calendar date (data/log.json) ----
+
+// calories / proteinGrams are for ONE portion; the meal total multiplies by count.
+export const FoodItemSchema = z.object({
+  name: z.string().min(1),
+  portion: z.string(),
+  count: z.number().min(0),
+  calories: z.number().min(0),
+  proteinGrams: z.number().min(0),
+});
+
+export const MealEntrySchema = z.object({
+  kind: z.literal("meal"),
+  id: z.string(),
+  at: z.string(),
+  title: z.string(),
+  photo: z.string(),
+  cardId: z.string().optional(), // logged from a saved recipe ("I cooked this")
+  items: z.array(FoodItemSchema),
+});
+
+export const WorkoutEntrySchema = z.object({
+  kind: z.literal("workout"),
+  id: z.string(),
+  at: z.string(),
+  title: z.string(),
+  cardId: z.string(),
+  minutes: z.number().min(0),
+  reps: z.number().min(0),
+  calories: z.number().min(0),
+});
+
+export const LogEntrySchema = z.discriminatedUnion("kind", [MealEntrySchema, WorkoutEntrySchema]);
+export const LogSchema = z.object({
+  days: z.record(z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.array(LogEntrySchema)),
+});
+
+export type FoodItem = z.infer<typeof FoodItemSchema>;
+export type MealEntry = z.infer<typeof MealEntrySchema>;
+export type WorkoutEntry = z.infer<typeof WorkoutEntrySchema>;
+export type LogEntry = z.infer<typeof LogEntrySchema>;
+export type Log = z.infer<typeof LogSchema>;
+
+// Daily targets and body weight (weight drives the calories-burned estimate). data/goals.json
+export const GoalsSchema = z.object({
+  calories: z.number().int().min(800).max(6000),
+  proteinGrams: z.number().int().min(10).max(400),
+  weightKg: z.number().min(25).max(250),
+});
+export type Goals = z.infer<typeof GoalsSchema>;
+export const defaultGoals = (): Goals => ({ calories: 2000, proteinGrams: 70, weightKg: 65 });
+
 // ---- Shapes the AI must return. Kept flat and fully "required" so both the
 // OpenAI API (strict JSON schema) and `codex exec --output-schema` accept them. ----
+
+export const MealScanSchema = z.object({
+  title: z.string(),
+  items: z.array(
+    z.object({ name: z.string(), portion: z.string(), count: z.number(), calories: z.number(), proteinGrams: z.number() }),
+  ),
+});
+export type MealScan = z.infer<typeof MealScanSchema>;
 
 export const ExtractionSchema = z.object({
   kind: z.enum(["recipe", "workout", "other"]),

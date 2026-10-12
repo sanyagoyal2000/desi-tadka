@@ -1,7 +1,21 @@
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
-import { CardSchema, PlanSchema, RoutineItemSchema, emptyPlan, type Card, type Plan, type RoutineItem } from "./schema";
+import {
+  CardSchema,
+  GoalsSchema,
+  LogSchema,
+  PlanSchema,
+  RoutineItemSchema,
+  defaultGoals,
+  emptyPlan,
+  type Card,
+  type Goals,
+  type Log,
+  type LogEntry,
+  type Plan,
+  type RoutineItem,
+} from "./schema";
 import { todayISO, weekDates, weekStart } from "./plan";
 import { DATA_DIR, MEDIA_DIR, newId } from "./paths";
 
@@ -110,4 +124,54 @@ export async function savePlan(plan: Plan): Promise<Plan> {
   const clean: Plan = { days: Object.fromEntries(Object.entries(plan.days).filter(([, ids]) => ids.length > 0)) };
   await writeJSON(PLAN_FILE, clean);
   return clean;
+}
+
+const LOG_FILE = path.join(DATA_DIR, "log.json");
+const GOALS_FILE = path.join(DATA_DIR, "goals.json");
+
+export async function getLog(): Promise<Log> {
+  try {
+    const parsed = LogSchema.safeParse(JSON.parse(await readFile(LOG_FILE, "utf8")));
+    return parsed.success ? parsed.data : { days: {} };
+  } catch {
+    return { days: {} };
+  }
+}
+
+export async function dayLog(date: string): Promise<LogEntry[]> {
+  return (await getLog()).days[date] ?? [];
+}
+
+export async function addLogEntry(date: string, entry: LogEntry): Promise<LogEntry> {
+  const log = await getLog();
+  log.days[date] = [...(log.days[date] ?? []), entry];
+  await writeJSON(LOG_FILE, log);
+  return entry;
+}
+
+// Removes the entry and its meal photo; empty days are dropped.
+export async function removeLogEntry(date: string, id: string): Promise<boolean> {
+  const log = await getLog();
+  const entries = log.days[date] ?? [];
+  const rest = entries.filter((e) => e.id !== id);
+  if (rest.length === entries.length) return false;
+  if (rest.length) log.days[date] = rest;
+  else delete log.days[date];
+  await writeJSON(LOG_FILE, log);
+  if (/^meal-[\w]+$/.test(id)) await rm(path.join(MEDIA_DIR, id), { recursive: true, force: true });
+  return true;
+}
+
+export async function getGoals(): Promise<Goals> {
+  try {
+    const parsed = GoalsSchema.safeParse(JSON.parse(await readFile(GOALS_FILE, "utf8")));
+    return parsed.success ? parsed.data : defaultGoals();
+  } catch {
+    return defaultGoals();
+  }
+}
+
+export async function saveGoals(goals: Goals): Promise<Goals> {
+  await writeJSON(GOALS_FILE, goals);
+  return goals;
 }

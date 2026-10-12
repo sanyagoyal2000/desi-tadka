@@ -7,18 +7,20 @@ import {
   AllSuggestionsSchema,
   ExtractionSchema,
   MAX_WORKOUT_SWAPS,
+  MealScanSchema,
   RecipeRewriteSchema,
   SuggestionsSchema,
   toStrictJsonSchema,
   type Card,
   type Extraction,
+  type MealScan,
   type RecipeCard,
   type RecipeRewrite,
   type WorkoutCard,
 } from "../schema";
 import { codexProvider } from "./codexCli";
 import { openaiProvider } from "./openaiApi";
-import { extractionPrompt, ideaPrompt, rewritePrompt, suggestAllPrompt, suggestPrompt } from "./prompts";
+import { extractionPrompt, ideaPrompt, mealScanPrompt, rewritePrompt, suggestAllPrompt, suggestPrompt } from "./prompts";
 import type { AIProvider } from "./types";
 
 export class AIConfigError extends Error {}
@@ -71,6 +73,23 @@ export async function extractCard(input: { id: string; sourceUrl: string; captio
 export async function ideaToCard(id: string, idea: string): Promise<Extracted> {
   const x: Extraction = await ask(ExtractionSchema, ideaPrompt(idea));
   return toCard(x, { id, sourceUrl: "", frameUrls: [] });
+}
+
+// Plate photo (optional) + note → food items with per-portion calories and protein.
+export async function scanMeal(note: string, photoFile?: string): Promise<MealScan> {
+  const scan = await ask(MealScanSchema, mealScanPrompt(note, Boolean(photoFile)), photoFile ? [photoFile] : []);
+  return {
+    title: scan.title.trim() || "Meal",
+    items: scan.items
+      .filter((i) => i.name.trim())
+      .map((i) => ({
+        name: i.name.trim(),
+        portion: i.portion.trim() || "1 serving",
+        count: Math.max(0, Math.round(i.count * 2) / 2) || 1,
+        calories: Math.max(0, Math.round(i.calories)),
+        proteinGrams: Math.max(0, Math.round(i.proteinGrams * 10) / 10),
+      })),
+  };
 }
 
 export async function pictureFor(card: RecipeCard): Promise<RecipeCard> {

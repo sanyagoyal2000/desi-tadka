@@ -54,30 +54,30 @@ export default function RoutineSection() {
     <section id="routine" aria-labelledby="routine-heading" className="scroll-mt-4">
       <div className="mb-3 flex items-baseline justify-between">
         <h2 id="routine-heading" className="flex items-center gap-2 font-display text-2xl font-extrabold">
-          <Lightning aria-hidden="true" size={24} weight="duotone" className="text-turmeric" /> My routine
+          <Lightning aria-hidden="true" size={24} weight="duotone" className="text-electric" /> My routine
         </h2>
-        {items && items.length > 0 && <span className="rounded-full bg-surface px-2.5 py-0.5 text-xs font-bold text-turmeric">{items.length}</span>}
+        {items && items.length > 0 && <span className="rounded-full bg-surface px-2.5 py-0.5 text-xs font-bold text-electric">{items.length}</span>}
       </div>
 
       {items === null ? (
         <div className="h-24 animate-pulse rounded-3xl bg-surface/60" />
       ) : items.length === 0 ? (
-        <div className="rounded-3xl border-2 border-dashed border-turmeric/50 px-6 py-6 text-center text-sm text-ink/60">
-          Want just 1–2 moves from a workout? Open a saved workout and tap <span className="font-semibold text-turmeric">+ Routine</span> on an exercise. They collect here.
+        <div className="rounded-3xl border-2 border-dashed border-electric/50 px-6 py-6 text-center text-sm text-ink/60">
+          Want just 1–2 moves from a workout? Open a saved workout and tap <span className="font-semibold text-electric">+ Routine</span> on an exercise. They collect here.
         </div>
       ) : (
-        <div className="rounded-3xl bg-surface p-3 shadow-[0_4px_16px_rgba(42,26,16,0.06)]">
+        <div className="rounded-3xl bg-surface p-3 shadow-[0_4px_16px_rgba(24,12,80,0.06)]">
           <ul className="flex flex-col gap-2">
             {items.map((item) => (
-              <li key={item.id} className="flex items-center gap-3 rounded-2xl bg-cream p-2">
-                <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-turmeric-soft text-turmeric">
+              <li key={item.id} className="flex items-center gap-3 rounded-2xl bg-canvas p-2">
+                <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-electric-soft text-electric">
                   {item.image ? <img src={item.image} alt="" className="size-full object-cover" /> : <Barbell aria-hidden="true" size={24} weight="duotone" />}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{item.name}</p>
                   <p className="truncate text-xs text-ink/60">
                     {item.reps} · from{" "}
-                    <Link href={`/cards/${item.cardId}`} className="font-semibold text-chili hover:underline">
+                    <Link href={`/cards/${item.cardId}`} className="font-semibold text-volt hover:underline">
                       {item.cardTitle}
                     </Link>
                   </p>
@@ -86,7 +86,7 @@ export default function RoutineSection() {
                   type="button"
                   onClick={() => remove(item)}
                   aria-label={`Remove ${item.name} from my routine`}
-                  className="grid size-10 shrink-0 place-items-center rounded-full text-ink/40 hover:bg-surface hover:text-chili focus-visible:outline-2 focus-visible:outline-turmeric"
+                  className="grid size-10 shrink-0 place-items-center rounded-full text-ink/40 hover:bg-surface hover:text-volt focus-visible:outline-2 focus-visible:outline-electric"
                 >
                   <X aria-hidden="true" size={16} weight="bold" />
                 </button>
@@ -94,9 +94,9 @@ export default function RoutineSection() {
             ))}
           </ul>
 
-          <div className="mt-3 border-t border-cream pt-3">
+          <div className="mt-3 border-t border-canvas pt-3">
             <p className="flex items-center gap-2 text-sm font-bold">
-              <Bell aria-hidden="true" size={18} weight="bold" className="text-chili" /> Weekly nudge
+              <Bell aria-hidden="true" size={18} weight="bold" className="text-volt" /> Weekly nudge
             </p>
             <div className="mt-2 flex items-end gap-2">
               <div role="group" aria-label="Days" className="grid flex-1 grid-cols-7 gap-1">
@@ -109,8 +109,8 @@ export default function RoutineSection() {
                       aria-pressed={on}
                       aria-label={d.long}
                       onClick={() => toggleDay(d.code)}
-                      className={`h-10 rounded-xl text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-turmeric ${
-                        on ? "bg-chili text-white" : "bg-cream text-ink/60 hover:text-ink"
+                      className={`h-10 rounded-xl text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-electric ${
+                        on ? "bg-volt text-white" : "bg-canvas text-ink/60 hover:text-ink"
                       }`}
                     >
                       {d.label}
@@ -126,14 +126,14 @@ export default function RoutineSection() {
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="h-10 w-28 rounded-xl bg-cream px-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-turmeric"
+                className="h-10 w-28 rounded-xl bg-canvas px-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-electric"
               />
             </div>
             <button
               type="button"
               onClick={remind}
               disabled={days.size === 0 || !time}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-chili py-3 font-display text-lg font-bold text-white disabled:opacity-50"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-volt py-3 font-display text-lg font-bold text-white disabled:opacity-50"
             >
               <Bell aria-hidden="true" size={20} weight="fill" /> Add weekly reminder to Calendar
             </button>

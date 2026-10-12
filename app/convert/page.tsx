@@ -87,7 +87,7 @@ function Editor({ initial }: { initial: Card }) {
 
   return (
     <main className="flex flex-col gap-4">
-      <section className="rounded-3xl bg-chili p-4 text-white">
+      <section className="rounded-3xl bg-volt p-4 text-white">
         {card.kind === "recipe" ? (
           <>
             <p className="flex items-center gap-2 font-display text-xl font-bold">
@@ -98,7 +98,7 @@ function Editor({ initial }: { initial: Card }) {
               type="button"
               disabled={busy !== null}
               onClick={() => apply({ action: "vegetarian" }, "veg")}
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-3 font-display text-lg font-bold text-chili disabled:opacity-60"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-3 font-display text-lg font-bold text-volt disabled:opacity-60"
             >
               {busy === "veg" ? (
                 "Adding tadka…"
@@ -114,8 +114,8 @@ function Editor({ initial }: { initial: Card }) {
         )}
       </section>
 
-      {error && <p className="rounded-2xl bg-surface px-4 py-3 text-sm font-semibold text-chili">{error}</p>}
-      {typeof busy === "number" && <p className="animate-pulse text-center text-sm font-semibold text-turmeric">Adding tadka… rewriting the {card.kind}</p>}
+      {error && <p className="rounded-2xl bg-surface px-4 py-3 text-sm font-semibold text-blaze">{error}</p>}
+      {typeof busy === "number" && <p className="animate-pulse text-center text-sm font-semibold text-electric">Adding tadka… rewriting the {card.kind}</p>}
 
       {card.kind === "recipe" ? (
         <RecipeCard card={card} onSwap={onSwap} busyIndex={typeof busy === "number" ? busy : null} />
@@ -138,7 +138,7 @@ function Editor({ initial }: { initial: Card }) {
           type="button"
           disabled={saving || busy !== null}
           onClick={save}
-          className="flex-1 rounded-2xl bg-leaf py-4 font-display text-xl font-bold text-white shadow-lg disabled:opacity-50"
+          className="flex-1 rounded-2xl bg-aqua py-4 font-display text-xl font-bold text-white shadow-lg disabled:opacity-50"
         >
           {saving ? "Saving…" : "Save card"}
         </button>

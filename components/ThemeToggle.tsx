@@ -15,10 +15,10 @@ export default function ThemeToggle() {
           localStorage.setItem("theme", next);
         } catch {}
       }}
-      className="grid size-10 place-items-center rounded-full bg-surface text-lg shadow-[0_2px_8px_rgba(42,26,16,0.08)] focus-visible:outline-2 focus-visible:outline-turmeric"
+      className="grid size-10 place-items-center rounded-full bg-surface text-lg shadow-[0_2px_8px_rgba(24,12,80,0.08)] focus-visible:outline-2 focus-visible:outline-electric"
     >
-      <Moon aria-hidden="true" size={20} weight="bold" className="text-chili dark:hidden" />
-      <Sun aria-hidden="true" size={20} weight="bold" className="hidden text-turmeric dark:block" />
+      <Moon aria-hidden="true" size={20} weight="bold" className="text-volt dark:hidden" />
+      <Sun aria-hidden="true" size={20} weight="bold" className="hidden text-electric dark:block" />
     </button>
   );
 }

@@ -12,10 +12,10 @@ type Props = {
 export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
   const anySwapped = card.ingredients.some((i) => i.swapped);
   return (
-    <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(42,26,16,0.10)]">
+    <article className="overflow-hidden rounded-3xl bg-surface shadow-[0_8px_30px_rgba(24,12,80,0.10)]">
       <CardImage src={card.image} alt={card.title} kind="recipe" badge={anySwapped ? "Personalized" : undefined} />
       <div className="p-5">
-        <span className="text-xs font-bold uppercase tracking-widest text-chili">Recipe</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-volt">Recipe</span>
         <h2 className="font-display text-3xl font-extrabold leading-tight">{card.title}</h2>
 
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
@@ -30,16 +30,16 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
           {card.ingredients.map((ing, i) => (
             <li
               key={i}
-              className={`flex items-center gap-3 rounded-2xl px-3 py-2 ${ing.swapped ? "bg-turmeric-soft ring-2 ring-turmeric" : "bg-cream"}`}
+              className={`flex items-center gap-3 rounded-2xl px-3 py-2 ${ing.swapped ? "bg-electric-soft ring-2 ring-electric" : "bg-canvas"}`}
             >
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">
-                  {ing.swapped && <ArrowsClockwise aria-label="Personalized" size={15} weight="bold" className="mr-1 inline-block align-[-2px] text-turmeric" />}
+                  {ing.swapped && <ArrowsClockwise aria-label="Personalized" size={15} weight="bold" className="mr-1 inline-block align-[-2px] text-electric" />}
                   {ing.name}
                 </p>
                 <p className="text-sm text-ink/60">
                   {ing.quantity || <span className="italic">amount not given</span>}
-                  {ing.swapped && ing.original && <span className="ml-2 line-through decoration-chili/60">{ing.original}</span>}
+                  {ing.swapped && ing.original && <span className="ml-2 line-through decoration-volt/60">{ing.original}</span>}
                 </p>
               </div>
               {onSwap && <SwapButton label={ing.name} onClick={() => onSwap(i)} busy={busyIndex === i} />}
@@ -54,7 +54,7 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
         <ol className="mt-2 flex flex-col gap-3">
           {card.steps.map((step, i) => (
             <li key={i} className="flex gap-3">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-chili text-sm font-bold text-white">{i + 1}</span>
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-volt text-sm font-bold text-white">{i + 1}</span>
               <p className="pt-0.5 leading-relaxed">{step}</p>
             </li>
           ))}
@@ -66,8 +66,8 @@ export default function RecipeCard({ card, onSwap, busyIndex }: Props) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-cream px-2 py-3">
-      <dd className="font-display text-2xl font-extrabold leading-none text-chili">{value}</dd>
+    <div className="rounded-2xl bg-canvas px-2 py-3">
+      <dd className="font-display text-2xl font-extrabold leading-none text-volt">{value}</dd>
       <dt className="mt-1 text-xs font-medium text-ink/60">{label}</dt>
     </div>
   );
